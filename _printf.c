@@ -17,7 +17,7 @@ int _printf(const char *format, ...)
 	va_list var_arg_list;
 	char *s_param;
 	int int_param;
-	unsigned u_int_param;
+	unsigned int u_int_param;
 
 	va_start(var_arg_list, format);
 	while (format != NULL && format[i] != '\0')
@@ -33,7 +33,17 @@ int _printf(const char *format, ...)
 					i++;
 					break;
 				case 's':
-					s_param = va_arg(var_arg_list, char *);
+				case 'x':
+				case 'X':
+					if (format[i + 1] == 'x' || format[i + 1] == 'X')
+					{
+						u_int_param = va_arg(var_arg_list, unsigned int);
+						s_param = dec2hex(u_int_param, format[i + 1]);
+					}
+					else
+					{
+						s_param = va_arg(var_arg_list, char *);
+					}
 					s_param = s_param == NULL ? "(null)" : s_param;
 					j = 0;
 					while (s_param[j] != '\0')
@@ -41,6 +51,8 @@ int _printf(const char *format, ...)
 						_putchar(s_param[j++]);
 						count++;
 					}
+					if (u_int_param)
+						free(s_param);
 					i++;
 					break;
 				case '%':
