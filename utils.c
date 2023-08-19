@@ -8,38 +8,26 @@ int _pow(int, int);
 */
 int64_t print_number(int n)
 {
-	int64_t x, m, l, char_count;
+	int64_t right_most_digit, n_cpy, char_count;
 	int radix_power = 0;
 
-	l = n;
-	if (l == 0)
-	{
-		_putchar(l + 48);
-		return (1);
-	}
 	if (n < 0)
 	{
 		_putchar('-');
-		l = -l;
+		n = -n;
 	}
-	m = l;
-	while (m >= 10)
+	n_cpy = n;
+	while (n_cpy >= 10)
 	{
-		m =  m / 10;
+		n_cpy =  n_cpy / 10;
 		radix_power++;
 	}
 	char_count = radix_power;
-	/*
-	* Using log below works, but for the
-	* compilation flags used for the task
-	* it cannot work with using -lm flag
-	*/
-	/* radix_power = log((double)abs(n)); */
 
 	while (radix_power >= 0)
 	{
-		x = l / _pow(10, radix_power--);
-		_putchar(x % 10 + 48);
+		right_most_digit = n / _pow(10, radix_power--) % 10;
+		_putchar(right_most_digit + 48);
 	}
 	return (char_count + 1);
 }
@@ -63,4 +51,24 @@ int _pow(int b, int p)
 		return (b * _pow(b, --p));
 
 	return (-1);
+}
+
+/**
+* dec2bin - converts decimal to binary
+* @n: number in decimal
+*
+* Return: integer holding n in binary format
+*/
+int dec2bin(unsigned int n)
+{
+	int i = 0;
+	unsigned int n_bin = 0;
+
+	while (n != 0)
+	{
+		n_bin += n % 2 * _pow(10, i++);
+		n /= 2;
+	}
+
+	return (n_bin);
 }

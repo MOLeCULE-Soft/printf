@@ -16,6 +16,7 @@ int _printf(const char *format, ...)
 	va_list var_arg_list;
 	char *s_param;
 	int int_param;
+	unsigned u_int_param;
 
 	va_start(var_arg_list, format);
 	while (format != NULL && format[i] != '\0')
@@ -49,6 +50,14 @@ int _printf(const char *format, ...)
 				case 'd':
 				case 'i':
 					int_param = va_arg(var_arg_list, int);
+					count += print_number(int_param);
+					i++;
+					break;
+				case 'b':
+				case 'u':
+					u_int_param = va_arg(var_arg_list, unsigned int);
+					if (format[i] == 'b')
+						int_param = dec2bin(u_int_param);
 					count += print_number(int_param);
 					i++;
 					break;

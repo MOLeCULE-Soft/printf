@@ -9,5 +9,6 @@
 int _putchar(char);
 int _printf(const char *format, ...);
 int64_t print_number(int n);
+int dec2bin(unsigned int n);
 
 #endif
