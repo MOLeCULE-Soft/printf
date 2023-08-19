@@ -8,7 +8,7 @@
 
 int _putchar(char);
 int _printf(const char *format, ...);
-int64_t print_number(int n);
+int64_t print_number(int64_t n);
 int dec2bin(unsigned int n);
-
+int dec2oct(unsigned int n);
 #endif

@@ -6,7 +6,7 @@ int _pow(int, int);
 * print_number - prints an integer to the stdout
 * @n: integer to be printed
 */
-int64_t print_number(int n)
+int64_t print_number(int64_t n)
 {
 	int64_t right_most_digit, n_cpy, char_count;
 	int radix_power = 0;
@@ -71,4 +71,23 @@ int dec2bin(unsigned int n)
 	}
 
 	return (n_bin);
+}
+/**
+* dec2oct - converts decimal to octal
+* @n: number in octal
+*
+* Return: integer holding n in octal format
+*/
+int dec2oct(unsigned int n)
+{
+        int i = 0;
+        unsigned int n_oct = 0;
+
+        while (n != 0)
+        {
+                n_oct += n % 8 * _pow(10, i++);
+                n /= 8;
+        }
+
+        return (n_oct);
 }

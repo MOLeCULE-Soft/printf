@@ -7,6 +7,7 @@ int main(void)
         chars_printed = _printf("We're gonna have an %c grade (100%%) in the %s project%!", 'A', "0x11. C - printf");
         _printf("\n\n%d characters printed %i.\n", chars_printed, 987);
 	_printf("Binary of %d is %b\n", 5, 5);
+	_printf("Octal of %d is %o\n", 345, 345);
 	for (i = 500; i <= 512; i++)
 	{
 		_printf("- Binary of %d: %b", i, i);

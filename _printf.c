@@ -1,4 +1,5 @@
 #include "main.h"
+#include <stdio.h>
 
 int _printf(const char *format, ...);
 /**
@@ -55,10 +56,17 @@ int _printf(const char *format, ...)
 					break;
 				case 'b':
 				case 'u':
+				case 'o':
 					u_int_param = va_arg(var_arg_list, unsigned int);
-					if (format[i] == 'b')
-						int_param = dec2bin(u_int_param);
-					count += print_number(int_param);
+					if (format[i + 1] == 'b')
+					{
+						u_int_param = dec2bin(u_int_param);
+					}
+					else if (format[i + 1] == 'o')
+					{
+						u_int_param = dec2oct(u_int_param);
+					}
+					count += print_number(u_int_param);
 					i++;
 					break;
 				default:
