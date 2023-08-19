@@ -51,8 +51,7 @@ int _printf(const char *format, ...)
 						_putchar(s_param[j++]);
 						count++;
 					}
-					if (u_int_param)
-						free(s_param);
+					/*if (u_int_param)*/
 					i++;
 					break;
 				case '%':
