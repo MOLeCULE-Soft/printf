@@ -75,7 +75,6 @@ int _printf(const char *format, ...)
 					}
 					else if (format[i + 1] == 'o')
 					{
-					printf("Calling dec2oct\n");
 						u_int_param = dec2oct(u_int_param);
 					}
 					count += print_number(u_int_param);
