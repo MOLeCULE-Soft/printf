@@ -1,7 +1,7 @@
 #include "main.h"
 #include <stdint.h>
 
-int _pow(int, int);
+int64_t _pow(int64_t, int64_t);
 /**
 * print_number - prints an integer to the stdout
 * @n: integer to be printed
@@ -41,7 +41,7 @@ int64_t print_number(int64_t n)
 *
 * Return: b^p
 */
-int _pow(int b, int p)
+int64_t _pow(int64_t b, int64_t p)
 {
 	if (p == 0)
 		return (1);
@@ -60,10 +60,10 @@ int _pow(int b, int p)
 *
 * Return: integer holding n in binary format
 */
-int dec2bin(unsigned int n)
+int64_t dec2bin(unsigned int n)
 {
 	int i = 0;
-	unsigned int n_bin = 0;
+	int64_t n_bin = 0;
 
 	while (n != 0)
 	{
@@ -80,10 +80,10 @@ int dec2bin(unsigned int n)
 *
 * Return: integer holding n in octal format
 */
-int dec2oct(unsigned int n)
+int64_t dec2oct(unsigned int n)
 {
 	int i = 0;
-	unsigned int n_oct = 0;
+	int64_t n_oct = 0;
 
 	while (n != 0)
 	{

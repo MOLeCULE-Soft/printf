@@ -17,7 +17,7 @@ int _printf(const char *format, ...)
 	va_list var_arg_list;
 	char *s_param;
 	int int_param;
-	unsigned int u_int_param;
+	uint64_t u_int_param;
 
 	va_start(var_arg_list, format);
 	while (format != NULL && format[i] != '\0')
@@ -75,6 +75,7 @@ int _printf(const char *format, ...)
 					}
 					else if (format[i + 1] == 'o')
 					{
+					printf("Calling dec2oct\n");
 						u_int_param = dec2oct(u_int_param);
 					}
 					count += print_number(u_int_param);
