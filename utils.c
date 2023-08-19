@@ -103,7 +103,7 @@ int dec2oct(unsigned int n)
 */
 char *dec2hex(unsigned int n, char _case)
 {
-	int i = 0, length = 0, div;
+	int div;
 	unsigned int n_cpy = n;
 	char *n_hex = n == 0 ? "0" : "", *tmp;
 
@@ -115,7 +115,6 @@ char *dec2hex(unsigned int n, char _case)
 		if (n_hex == NULL)
 			return (NULL);
 		div = (n % 16);
-		length = strlen(n_hex);
 		*(n_hex) = div < 10 ? 48 + div : _case + (div - 10);
 		*(n_hex + 1) = '\0';
 		strcat(n_hex, tmp);
