@@ -15,7 +15,7 @@ int _printf(const char *format, ...)
 {
 	unsigned long int i = 0, j;
 	va_list var_arg_list;
-	char *s_param;
+	char *s_param, *tmp_hex;
 	int int_param, count = 0;
 	uint64_t u_int_param;
 
@@ -35,6 +35,7 @@ int _printf(const char *format, ...)
 				case 's':
 				case 'x':
 				case 'X':
+				case 'S':
 					if (format[i + 1] == 'x' || format[i + 1] == 'X')
 					{
 						u_int_param = va_arg(var_arg_list, unsigned int);
@@ -48,8 +49,29 @@ int _printf(const char *format, ...)
 					j = 0;
 					while (s_param[j] != '\0')
 					{
-						_putchar(s_param[j++]);
-						count++;
+						if (format[i + 1] == 'S' && !isprint(s_param[j]))
+						{
+							tmp_hex = dec2hex(s_param[j], 'X');
+							_putchar('\\');
+							_putchar('x');
+							if (s_param[j] < 16)
+							{
+								_putchar('0');
+								_putchar(*tmp_hex);
+							}
+							else
+							{
+								_putchar(*tmp_hex);
+								_putchar(*(tmp_hex + 1));
+							}
+							count += 4;
+						}
+						else
+						{
+							_putchar(s_param[j]);
+							count++;
+						}
+						j++;
 					}
 					/*if (u_int_param)*/
 					i++;

@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdio.h>
+#include <ctype.h>
 
 int _putchar(char);
 int _printf(const char *format, ...);
