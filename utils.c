@@ -10,12 +10,13 @@ uint64_t _pow(uint64_t, uint64_t);
 */
 int64_t print_number(int64_t n)
 {
-	int64_t right_most_digit, n_cpy, char_count;
+	int64_t right_most_digit, n_cpy, char_count = 0;
 	int radix_power = 0;
 
 	if (n < 0)
 	{
 		_putchar('-');
+		char_count++;
 		n = -n;
 	}
 	n_cpy = n;
@@ -24,7 +25,7 @@ int64_t print_number(int64_t n)
 		n_cpy =  n_cpy / 10;
 		radix_power++;
 	}
-	char_count = radix_power;
+	char_count += radix_power;
 
 	while (radix_power >= 0)
 	{
@@ -123,4 +124,80 @@ char *dec2hex(uint64_t n, char _case)
 	if (n_cpy >= 16)
 		free(tmp);
 	return (n_hex);
+}
+
+/**
+* update_flag - updates flag
+* @flags: structure of options
+* @flag: character for flag
+*/
+void update_flag(option *flags, char flag)
+{
+	switch (flag)
+	{
+		case '+':
+			flags->plus = 1;
+			break;
+		case '-':
+			flags->minus = 1;
+			break;
+		case ' ':
+			flags->space = 1;
+			break;
+		case '#':
+			flags->hash = 1;
+			break;
+		case '0':
+			flags->zero = 1;
+			break;
+		default:
+			break;
+	}
+}
+
+/**
+* flag_set - checks if a flag is set
+* @flags: structure of options
+* @flag: character flag to check in options
+*
+* Return: 1 if flag is set, otherwise 0
+*/
+short flag_set(option *flags, char flag)
+{
+	switch (flag)
+	{
+		case '+':
+			return (flags->plus);
+		case '-':
+			return (flags->minus);
+		case ' ':
+			return (flags->space);
+		case '#':
+			return (flags->hash);
+		case '0':
+			return (flags->zero);
+		default:
+			return (0);
+	}
+}
+
+/**
+* _is_spec - checks if a string is a spec
+* @spec: string to check
+*
+* Return: 1 if is spec otherwise 0
+*/
+short _is_spec(char *spec)
+{
+	int i;
+	const char *my_specs[] = SPECIFIERS;
+
+	for (i = 0; i < SPEC_LENGTH; i++)
+	{
+		if (strcmp(spec, my_specs[i]) == 0)
+		{
+			return (1);
+		}
+	}
+	return (0);
 }
