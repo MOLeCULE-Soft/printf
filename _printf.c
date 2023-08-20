@@ -60,7 +60,7 @@ int _printf(const char *format, ...)
 					count++;
 					i++;
 					break;
-				case 's':
+				/*case 's':*/
 				case 'x':
 				case 'X':
 				case 'S':
@@ -129,11 +129,11 @@ int _printf(const char *format, ...)
 					/*if (u_int_param)*/
 					i++;
 					break;
-				case '%':
+				/*case '%':
 					_putchar(format[j]);
 					count++;
 					i++;
-					break;
+					break;*/
 				case 'd':
 				case 'i':
 					int_param = va_arg(var_arg_list, int);
