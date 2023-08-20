@@ -12,5 +12,8 @@ int main(void)
 		printf("Address:%d = %p\n", i , (void*)(addr + i));
 	}
 	_printf("%S\n", "Best\nSchool");
+
+	_printf("_Address NULL: %p\n", NULL);
+	printf("Address NULL: %p\n", NULL);
         return (0);
 }

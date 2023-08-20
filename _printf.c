@@ -18,6 +18,7 @@ int _printf(const char *format, ...)
 	char *s_param, *tmp_hex;
 	int int_param, count = 0;
 	uint64_t u_int_param;
+	void *void_param;
 
 	va_start(var_arg_list, format);
 	while (format != NULL && format[i] != '\0')
@@ -44,16 +45,23 @@ int _printf(const char *format, ...)
 					}
 					else if (format[i + 1] == 'p')
 					{
-						u_int_param = (uint64_t)va_arg(var_arg_list, void *);
-						s_param = dec2hex(u_int_param, 'x');
-						_putchar('0');
-						_putchar('x');
+						void_param = va_arg(var_arg_list, void *);
+						if (void_param == NULL)
+						{
+							s_param = NULL;
+						}
+						else
+						{
+							s_param = dec2hex(u_int_param, 'x');
+							_putchar('0');
+							_putchar('x');
+						}
 					}
 					else
 					{
 						s_param = va_arg(var_arg_list, char *);
 					}
-					s_param = s_param == NULL ? "(null)" : s_param;
+					s_param = s_param == NULL ? "(nil)" : s_param;
 					j = 0;
 					while (s_param[j] != '\0')
 					{
