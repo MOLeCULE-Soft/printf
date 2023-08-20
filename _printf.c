@@ -45,7 +45,7 @@ int _printf(const char *format, ...)
 					else if(format[i + 1] == 'p')
 					{
 						u_int_param = va_arg(var_arg_list, uint64_t);
-						s_param = dec2hex(u_int_param, 'X');
+						s_param = dec2hex(u_int_param, 'x');
 						_putchar('0');
 						_putchar('x');
 					}
