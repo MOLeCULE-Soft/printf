@@ -60,7 +60,7 @@ int _printf(const char *format, ...)
 					count++;
 					i++;
 					break;
-				/*case 's':*/
+				case 's':*/
 				case 'x':
 				case 'X':
 				case 'S':
