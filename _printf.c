@@ -48,7 +48,7 @@ int _printf(const char *format, ...)
 						void_param = va_arg(var_arg_list, void *);
 						if (void_param == NULL)
 						{
-							s_param = NULL;
+							s_param = "(nil)";
 						}
 						else
 						{
@@ -61,7 +61,7 @@ int _printf(const char *format, ...)
 					{
 						s_param = va_arg(var_arg_list, char *);
 					}
-					s_param = s_param == NULL ? "(nil)" : s_param;
+					s_param = s_param == NULL ? "(null)" : s_param;
 					j = 0;
 					while (s_param[j] != '\0')
 					{
