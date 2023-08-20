@@ -26,5 +26,15 @@ int main(void)
 
 	_printf("_Address NULL: %p\n", NULL);
 	printf("Address NULL: %p\n", NULL);
+	
+	char *s = "Felix";
+	_printf("_String:%+s\n", s);
+	_printf("String:%  +s\n", s);
+	_printf("_String:% s\n", s);
+	_printf("String:% s\n", s);
+	_printf("_String:%  + s\n", s);
+	_printf("String:%+ s\n", s);
+	_printf("_String:% +s\n", s);
+	_printf("String:% +  s\n", s);
         return (0);
 }

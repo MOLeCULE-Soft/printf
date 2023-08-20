@@ -10,8 +10,8 @@
 #include <ctype.h>
 
 #define OPTIONS  "+- 0#"
-#define SPECIFIERS {"d", "i", "x", "X"}
-#define SPEC_LENGTH 4
+#define SPECIFIERS {"d", "i", "x", "X", "s", "S", "p", "o", "u", "%", "c", "b"}
+#define SPEC_LENGTH 12
 
 
 /**
