@@ -54,13 +54,13 @@ int _printf(const char *format, ...)
 
 			switch (format[j])
 			{
-				/*case 'c':
+				case 'c':
 					int_param = va_arg(var_arg_list, int);
 					_putchar(int_param);
 					count++;
 					i++;
-					break;*/
-				case 's':
+					break;
+				/*case 's':*/
 				case 'x':
 				case 'X':
 				case 'S':
