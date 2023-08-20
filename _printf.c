@@ -13,10 +13,10 @@ int _printf(const char *format, ...);
 */
 int _printf(const char *format, ...)
 {
-	unsigned long int i = 0, j, count = 0;
+	unsigned long int i = 0, j;
 	va_list var_arg_list;
 	char *s_param;
-	int int_param;
+	int int_param, count = 0;
 	uint64_t u_int_param;
 
 	va_start(var_arg_list, format);
