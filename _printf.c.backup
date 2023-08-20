@@ -13,19 +13,46 @@ int _printf(const char *format, ...);
 */
 int _printf(const char *format, ...)
 {
-	unsigned long int i = 0, j;
+	unsigned long int i = 0, j, k;
 	va_list var_arg_list;
 	char *s_param, *tmp_hex;
 	int int_param, count = 0;
 	uint64_t u_int_param;
-	void *void_param;
+	/*void *void_param;*/
+	option flags = {0, 0, 0, 0, 0, 0};
+	char cur_spec[3];
+	int flag_count;
 
 	va_start(var_arg_list, format);
 	while (format != NULL && format[i] != '\0')
 	{
+		flag_count = 0;
 		if (format[i] == '%')
 		{
-			switch (format[i + 1])
+			j = i + 1;
+			while (format[j] != '\0')
+			{
+				cur_spec[0] = format[j];
+				cur_spec[1] = '\0';
+				if (_is_spec(cur_spec))
+				{
+					break;
+				}
+				else if(strchr(OPTIONS, format[j]) != NULL)
+				{
+					update_flag(&flags, format[j]);
+					flag_count++;
+					j++;
+					continue;
+				}
+				else
+				{
+					j = i + 1;
+					break;
+				}
+			}
+
+			switch (format[j])
 			{
 				case 'c':
 					int_param = va_arg(var_arg_list, int);
@@ -33,20 +60,29 @@ int _printf(const char *format, ...)
 					count++;
 					i++;
 					break;
-				case 's':
+				/*case 's':*/
 				case 'x':
 				case 'X':
 				case 'S':
 				case 'p':
-					if (format[i + 1] == 'x' || format[i + 1] == 'X')
+					if (format[j] == 'x' || format[j] == 'X')
 					{
+						if (j != i + 1)
+						{
+							if (flag_set(&flags, '#'))
+							{
+								_putchar('0');
+								_putchar(format[j]);
+								count += 2;
+							}
+						}
 						u_int_param = va_arg(var_arg_list, unsigned int);
-						s_param = dec2hex(u_int_param, format[i + 1]);
+						s_param = dec2hex(u_int_param, format[j]);
 					}
-					else if (format[i + 1] == 'p')
+					else if (format[j] == 'p')
 					{
-						void_param = va_arg(var_arg_list, void *);
-						if (void_param == NULL)
+						u_int_param = va_arg(var_arg_list, uint64_t);
+						if (u_int_param == 0)
 						{
 							s_param = "(nil)";
 						}
@@ -55,6 +91,7 @@ int _printf(const char *format, ...)
 							s_param = dec2hex(u_int_param, 'x');
 							_putchar('0');
 							_putchar('x');
+							count += 2;
 						}
 					}
 					else
@@ -62,15 +99,15 @@ int _printf(const char *format, ...)
 						s_param = va_arg(var_arg_list, char *);
 					}
 					s_param = s_param == NULL ? "(null)" : s_param;
-					j = 0;
-					while (s_param[j] != '\0')
+					k = 0;
+					while (s_param[k] != '\0')
 					{
-						if (format[i + 1] == 'S' && !isprint(s_param[j]))
+						if (format[j] == 'S' && !isprint(s_param[k]))
 						{
-							tmp_hex = dec2hex(s_param[j], 'X');
+							tmp_hex = dec2hex(s_param[k], 'X');
 							_putchar('\\');
 							_putchar('x');
-							if (s_param[j] < 16)
+							if (s_param[k] < 16)
 							{
 								_putchar('0');
 								_putchar(*tmp_hex);
@@ -84,22 +121,35 @@ int _printf(const char *format, ...)
 						}
 						else
 						{
-							_putchar(s_param[j]);
+							_putchar(s_param[k]);
 							count++;
 						}
-						j++;
+						k++;
 					}
 					/*if (u_int_param)*/
 					i++;
 					break;
-				case '%':
-					_putchar(format[i]);
+				/*case '%':
+					_putchar(format[j]);
 					count++;
 					i++;
-					break;
+					break;*/
 				case 'd':
 				case 'i':
 					int_param = va_arg(var_arg_list, int);
+					if (j != i + 1)
+					{
+						if (flag_set(&flags, '+') && int_param >= 0)
+						{
+							_putchar('+');
+							count++;
+						}
+						else if (flag_set(&flags, ' ') && int_param >= 0)
+						{
+							_putchar(' ');
+							count++;
+						}
+					}
 					count += print_number(int_param);
 					i++;
 					break;
@@ -107,11 +157,11 @@ int _printf(const char *format, ...)
 				case 'u':
 				case 'o':
 					u_int_param = va_arg(var_arg_list, unsigned int);
-					if (format[i + 1] == 'b')
+					if (format[j] == 'b')
 					{
 						u_int_param = dec2bin(u_int_param);
 					}
-					else if (format[i + 1] == 'o')
+					else if (format[j] == 'o')
 					{
 						u_int_param = dec2oct(u_int_param);
 					}
@@ -127,6 +177,7 @@ int _printf(const char *format, ...)
 			_putchar(format[i]);
 			count++;
 		}
+		i += flag_count;
 		i++;
 	}
 	va_end(var_arg_list);
