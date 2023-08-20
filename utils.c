@@ -101,10 +101,10 @@ int64_t dec2oct(unsigned int n)
 *
 * Return: char pointer holding n in hexadecimal format
 */
-char *dec2hex(unsigned int n, char _case)
+char *dec2hex(uint64_t n, char _case)
 {
-	int div;
-	unsigned int n_cpy = n;
+	int rem;
+	u_int64_t n_cpy = n;
 	char *n_hex = n == 0 ? "0" : "", *tmp;
 
 	_case = _case == 'x' ? 97 : 65;
@@ -114,8 +114,8 @@ char *dec2hex(unsigned int n, char _case)
 		n_hex = malloc(sizeof(char) * strlen(tmp) + 2);
 		if (n_hex == NULL)
 			return (NULL);
-		div = (n % 16);
-		*(n_hex) = div < 10 ? 48 + div : _case + (div - 10);
+		rem = (n % 16);
+		*(n_hex) = rem < 10 ? 48 + rem : _case + (rem - 10);
 		*(n_hex + 1) = '\0';
 		strcat(n_hex, tmp);
 		n /= 16;

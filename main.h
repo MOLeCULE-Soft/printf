@@ -14,6 +14,6 @@ int _printf(const char *format, ...);
 int64_t print_number(int64_t n);
 uint64_t dec2bin(unsigned int n);
 int64_t dec2oct(unsigned int n);
-char *dec2hex(unsigned int n, char _case);
+char *dec2hex(uint64_t n, char _case);
 
 #endif

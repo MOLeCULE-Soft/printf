@@ -36,10 +36,18 @@ int _printf(const char *format, ...)
 				case 'x':
 				case 'X':
 				case 'S':
+				case 'p':
 					if (format[i + 1] == 'x' || format[i + 1] == 'X')
 					{
 						u_int_param = va_arg(var_arg_list, unsigned int);
 						s_param = dec2hex(u_int_param, format[i + 1]);
+					}
+					else if(format[i + 1] == 'p')
+					{
+						u_int_param = va_arg(var_arg_list, uint64_t);
+						s_param = dec2hex(u_int_param, 'X');
+						_putchar('0');
+						_putchar('x');
 					}
 					else
 					{
