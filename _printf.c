@@ -67,7 +67,7 @@ int _printf(const char *format, ...)
 				case 'p':
 					if (format[j] == 'x' || format[j] == 'X')
 					{
-						if (j != 0)
+						if (j != i + 1)
 						{
 							if (flag_set(&flags, '#'))
 							{
@@ -91,6 +91,7 @@ int _printf(const char *format, ...)
 							s_param = dec2hex(u_int_param, 'x');
 							_putchar('0');
 							_putchar('x');
+							count += 2;
 						}
 					}
 					else
