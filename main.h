@@ -16,7 +16,7 @@
 			"c", "b", "r", "R"}
 #define SPEC_LENGTH 14
 #define WRITE_BUFFER_SIZE 1024
-#define CONV_BUFFER_SIZE 21
+#define CONV_BUFFER_SIZE 33
 
 /**
 * struct option - structure holding flags
