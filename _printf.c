@@ -113,12 +113,12 @@ int _printf(const char *format, ...)
 									if (s_param[k] < 16)
 									{
 										buf_add_ch(buffer, &cursor, '0', &pc);
-										buf_add_ch(buffer, &cursor, *conv_buffer, &pc);
+										buf_add_ch(buffer, &cursor, *tmp, &pc);
 									}
 									else
 									{
-										buf_add_ch(buffer, &cursor, *conv_buffer, &pc);
-										buf_add_ch(buffer, &cursor, *(conv_buffer + 1), &pc);
+										buf_add_ch(buffer, &cursor, *tmp, &pc);
+										buf_add_ch(buffer, &cursor, *(tmp + 1), &pc);
 									}
 								}
 								else
