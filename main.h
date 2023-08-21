@@ -35,7 +35,21 @@ typedef struct option
 	short hash;
 	short zero;
 	short width;
+	short count;
 } option;
+
+/**
+* struct param - structure holding variadic params
+* @Int: for signed integers
+* @UInt: for unsigned integers
+* @String: for strings
+*/
+typedef struct param
+{
+	int64_t Int;
+	uint64_t UInt;
+	char *String;
+} param;
 
 int _putchar(char c);
 int _write(char *buffer, int bytes);

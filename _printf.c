@@ -12,23 +12,23 @@ int _printf(const char *format, ...);
 */
 int _printf(const char *format, ...)
 {
-	unsigned long int i = 0, j, k;
 	va_list var_arg_list;
-	char *s_param, *tmp;
-	int int_param;
+	char *tmp;
 	short cursor = 0, base;
-	uint64_t u_int_param, pc = 0;
-	option flags = {0, 0, 0, 0, 0, 0};
+	uint64_t pc , i, j, k;
+	option flags = {0, 0, 0, 0, 0, 0, 0};
+	param params;
 	char cur_spec[3];
-	int flag_count;
 	char buffer[WRITE_BUFFER_SIZE];
 	char conv_buffer[CONV_BUFFER_SIZE];
 
 	memset(buffer, 0, WRITE_BUFFER_SIZE);
 	va_start(var_arg_list, format);
+	i = 0;
+	pc = 0;
 	while (format != NULL && format[i] != '\0')
 	{
-		flag_count = 0;
+		flags.count = 0;
 		base = 10;
 		if (format[i] == '%')
 		{
@@ -44,7 +44,7 @@ int _printf(const char *format, ...)
 				else if (strchr(OPTIONS, format[j]) != NULL)
 				{
 					update_flag(&flags, format[j]);
-					flag_count++;
+					flags.count++;
 					j++;
 					continue;
 				}
@@ -58,8 +58,8 @@ int _printf(const char *format, ...)
 			switch (format[j])
 			{
 				case 'c':
-					int_param = va_arg(var_arg_list, int);
-					buf_add_ch(buffer, &cursor, int_param, &pc);
+					params.Int = va_arg(var_arg_list, int);
+					buf_add_ch(buffer, &cursor, params.Int, &pc);
 					i++;
 					break;
 				case 's':
@@ -79,20 +79,20 @@ int _printf(const char *format, ...)
 								buf_add_ch(buffer, &cursor, format[j], &pc);
 							}
 						}
-						u_int_param = va_arg(var_arg_list, unsigned int);
-						tmp = dec2hex(u_int_param, format[j], conv_buffer);
+						params.UInt = va_arg(var_arg_list, unsigned int);
+						tmp = dec2hex(params.UInt, format[j], conv_buffer);
 						buf_add_str(buffer, &cursor, tmp, &pc);
 					}
 					else if (format[j] == 'p')
 					{
-						u_int_param = va_arg(var_arg_list, uint64_t);
-						if (u_int_param == 0)
+						params.UInt = va_arg(var_arg_list, uint64_t);
+						if (params.UInt == 0)
 						{
 							buf_add_str(buffer, &cursor, "(nil)", &pc);
 						}
 						else
 						{
-							tmp = dec2hex(u_int_param, 'x', conv_buffer);
+							tmp = dec2hex(params.UInt, 'x', conv_buffer);
 							buf_add_ch(buffer, &cursor, '0', &pc);
 							buf_add_ch(buffer, &cursor, 'x', &pc);
 							buf_add_str(buffer, &cursor, tmp, &pc);
@@ -100,19 +100,19 @@ int _printf(const char *format, ...)
 					}
 					else
 					{
-						s_param = va_arg(var_arg_list, char *);
-						s_param = s_param == NULL ? "(null)" : s_param;
+						params.String = va_arg(var_arg_list, char *);
+						params.String = params.String == NULL ? "(null)" : params.String;
 						if (format[j] == 'S')
 						{
 							k = 0;
-							while (s_param[k] != '\0')
+							while (params.String[k] != '\0')
 							{
-								if (!isprint(s_param[k]))
+								if (!isprint(params.String[k]))
 								{
-									tmp = dec2hex(s_param[k], 'X', conv_buffer);
+									tmp = dec2hex(params.String[k], 'X', conv_buffer);
 									buf_add_ch(buffer, &cursor, '\\', &pc);
 									buf_add_ch(buffer, &cursor, 'x', &pc);
-									if (s_param[k] < 16)
+									if (params.String[k] < 16)
 									{
 										buf_add_ch(buffer, &cursor, '0', &pc);
 										buf_add_ch(buffer, &cursor, *tmp, &pc);
@@ -125,7 +125,7 @@ int _printf(const char *format, ...)
 								}
 								else
 								{
-									buf_add_ch(buffer, &cursor, s_param[k], &pc);
+									buf_add_ch(buffer, &cursor, params.String[k], &pc);
 								}
 								k++;
 							}
@@ -133,11 +133,11 @@ int _printf(const char *format, ...)
 						else
 						{
 							if (format[j] == 'r')
-								_strrev(buffer, &cursor, s_param, &pc);
+								_strrev(buffer, &cursor, params.String, &pc);
 							else if (format[j] == 'R')
-								_rot13(buffer, &cursor, s_param, &pc);
+								_rot13(buffer, &cursor, params.String, &pc);
 							else
-								buf_add_str(buffer, &cursor, s_param, &pc);
+								buf_add_str(buffer, &cursor, params.String, &pc);
 						}
 					}
 					i++;
@@ -148,29 +148,29 @@ int _printf(const char *format, ...)
 					break;
 				case 'd':
 				case 'i':
-					int_param = va_arg(var_arg_list, int);
+					params.Int = va_arg(var_arg_list, int);
 					if (j != i + 1)
 					{
-						if (flag_set(&flags, '+') && int_param >= 0)
+						if (flag_set(&flags, '+') && params.Int >= 0)
 							buf_add_ch(buffer, &cursor, '+', &pc);
-						else if (flag_set(&flags, ' ') && int_param >= 0)
+						else if (flag_set(&flags, ' ') && params.Int >= 0)
 							buf_add_ch(buffer, &cursor, ' ', &pc);
 					}
-					if (int_param < 0)
+					if (params.Int < 0)
 						buf_add_ch(buffer, &cursor, '-', &pc);
-					tmp = base_conv(int_param, base, conv_buffer);
+					tmp = base_conv(params.Int, base, conv_buffer);
 					buf_add_str(buffer, &cursor, tmp, &pc);
 					i++;
 					break;
 				case 'b':
 				case 'u':
 				case 'o':
-					u_int_param = va_arg(var_arg_list, unsigned int);
+					params.UInt = va_arg(var_arg_list, unsigned int);
 					if (format[j] == 'b')
 						base = 2;
 					else if (format[j] == 'o')
 						base = 8;
-					tmp = base_conv(u_int_param, base, conv_buffer);
+					tmp = base_conv(params.UInt, base, conv_buffer);
 					buf_add_str(buffer, &cursor, tmp, &pc);
 					i++;
 					break;
@@ -182,7 +182,7 @@ int _printf(const char *format, ...)
 		{
 			buf_add_ch(buffer, &cursor, format[i], &pc);
 		}
-		i += flag_count;
+		i += flags.count;
 		i++;
 	}
 	if (cursor > 0)
