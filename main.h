@@ -42,5 +42,7 @@ char *dec2hex(uint64_t n, char _case, char *buffer);
 void update_flag(option *flags, char flag);
 short flag_set(option *flags, char flag);
 short _is_spec(char *spec);
+void buf_add_ch(char *buffer, short *cursor, char ch);
+void buf_add_str(char *buffer, short *cursor, char *str);
 
 #endif

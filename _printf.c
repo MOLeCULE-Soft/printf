@@ -59,7 +59,7 @@ int _printf(const char *format, ...)
 			{
 				case 'c':
 					int_param = va_arg(var_arg_list, int);
-					buffer[cursor++] = int_param;
+					buf_add_ch(buffer, &cursor, int_param);
 					i++;
 					break;
 				case 's':
@@ -73,30 +73,27 @@ int _printf(const char *format, ...)
 						{
 							if (flag_set(&flags, '#'))
 							{
-								buffer[cursor++] = '0';
-								buffer[cursor++] = format[j];
+								buf_add_ch(buffer, &cursor, '0');
+								buf_add_ch(buffer, &cursor, format[j]);
 							}
 						}
 						u_int_param = va_arg(var_arg_list, unsigned int);
 						tmp = dec2hex(u_int_param, format[j], conv_buffer);
-						strcpy(buffer + cursor, tmp);
-						cursor += strlen(tmp);
+						buf_add_str(buffer, &cursor, tmp);
 					}
 					else if (format[j] == 'p')
 					{
 						u_int_param = va_arg(var_arg_list, uint64_t);
 						if (u_int_param == 0)
 						{
-							strcpy(buffer + cursor, "(nil)");
-							cursor += 5;
+							buf_add_str(buffer, &cursor, "(nil)");
 						}
 						else
 						{
 							tmp = dec2hex(u_int_param, 'x', conv_buffer);
-							buffer[cursor++] = '0';
-							buffer[cursor++] = 'x';
-							strcpy(buffer + cursor, tmp);
-							cursor += strlen(tmp);
+							buf_add_ch(buffer, &cursor, '0');
+							buf_add_ch(buffer, &cursor, 'x');
+							buf_add_str(buffer, &cursor, tmp);
 						}
 					}
 					else
@@ -111,36 +108,35 @@ int _printf(const char *format, ...)
 								if (!isprint(s_param[k]))
 								{
 									tmp = dec2hex(s_param[k], 'X', conv_buffer);
-									buffer[cursor++] = '\\';
-									buffer[cursor++] = 'x';
+									buf_add_ch(buffer, &cursor, '\\');
+									buf_add_ch(buffer, &cursor, 'x');
 									if (s_param[k] < 16)
 									{
-										buffer[cursor++] = '0';
-										buffer[cursor++] = *conv_buffer;
+										buf_add_ch(buffer, &cursor, '0');
+										buf_add_ch(buffer, &cursor, *conv_buffer);
 									}
 									else
 									{
-										buffer[cursor++] = *conv_buffer;
-										buffer[cursor++] = *(conv_buffer + 1);
+										buf_add_ch(buffer, &cursor, *conv_buffer);
+										buf_add_ch(buffer, &cursor, *(conv_buffer + 1));
 									}
 								}
 								else
 								{
-									buffer[cursor++] = s_param[k];
+									buf_add_ch(buffer, &cursor, s_param[k]);
 								}
 								k++;
 							}
 						}
 						else
 						{
-							strcpy(buffer + cursor, s_param);
-							cursor += strlen(s_param);
+							buf_add_str(buffer, &cursor, s_param);
 						}
 					}
 					i++;
 					break;
 				case '%':
-					buffer[cursor++] = format[j];
+					buf_add_ch(buffer, &cursor, format[j]);
 					i++;
 					break;
 				case 'd':
@@ -149,15 +145,14 @@ int _printf(const char *format, ...)
 					if (j != i + 1)
 					{
 						if (flag_set(&flags, '+') && int_param >= 0)
-							buffer[cursor++] = '+';
+							buf_add_ch(buffer, &cursor, '+');
 						else if (flag_set(&flags, ' ') && int_param >= 0)
-							buffer[cursor++] = ' ';
+							buf_add_ch(buffer, &cursor, ' ');
 					}
 					if (int_param < 0)
-						buffer[cursor++] = '-';
+						buf_add_ch(buffer, &cursor, '-');
 					tmp = base_conv(int_param, base, conv_buffer);
-					strcpy(buffer + cursor, tmp);
-					cursor += strlen(tmp);
+					buf_add_str(buffer, &cursor, tmp);
 					i++;
 					break;
 				case 'b':
@@ -169,8 +164,7 @@ int _printf(const char *format, ...)
 					else if (format[j] == 'o')
 						base = 8;
 					tmp = base_conv(u_int_param, base, conv_buffer);
-					strcpy(buffer + cursor, tmp);
-					cursor += strlen(tmp);
+					buf_add_str(buffer, &cursor, tmp);
 					i++;
 					break;
 				default:
@@ -179,16 +173,16 @@ int _printf(const char *format, ...)
 		}
 		else
 		{
-			buffer[cursor++] = format[i];
+			buf_add_ch(buffer, &cursor, format[i]);
 		}
 		i += flag_count;
 		i++;
 	}
 	if (cursor > 0)
 	{
-		buffer[cursor++] = '\0';
+		buf_add_ch(buffer, &cursor, '\0');
 		_write(buffer, cursor - 1);
-		/*printf("String:\n%s\nCount:%d\n", buffer, cursor - 1);*/
+		/*printf("String:\n%s\nCount:%d\n", buffer, &cursor - 1);*/
 	}
 	va_end(var_arg_list);
 	return (cursor - 1);
