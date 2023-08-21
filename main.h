@@ -8,12 +8,13 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <unistd.h>
+#include <stdbool.h>
 
 #define OPTIONS  "+- 0#"
-#define SPECIFIERS {"d", "i", "x", "X", "s",\
+#define SPECIFIERS {	"d", "i", "x", "X", "s",\
 			"S", "p", "o", "u", "%",\
-			"c", "b", "r"}
-#define SPEC_LENGTH 13
+			"c", "b", "r", "R"}
+#define SPEC_LENGTH 14
 #define WRITE_BUFFER_SIZE 1024
 #define CONV_BUFFER_SIZE 21
 
@@ -47,5 +48,6 @@ short _is_spec(char *spec);
 void buf_add_ch(char *buffer, short *cursor, char ch, uint64_t *pc);
 void buf_add_str(char *buffer, short *cursor, char *str, uint64_t *pc);
 void _strrev(char *buffer, short *cursor, char *s, uint64_t *pc);
+void _rot13(char *buffer, short *cursor, char *s, uint64_t *pc);
 
 #endif

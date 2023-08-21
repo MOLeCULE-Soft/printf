@@ -133,6 +133,8 @@ int _printf(const char *format, ...)
 						{
 							if (format[j] == 'r')
 								_strrev(buffer, &cursor, s_param, &pc);
+							else if (format[j] == 'R')
+								_rot13(buffer, &cursor, s_param, &pc);
 							else
 								buf_add_str(buffer, &cursor, s_param, &pc);
 						}

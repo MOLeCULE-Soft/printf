@@ -85,9 +85,9 @@ void buf_add_str(char *buffer, short *cursor, char *str, uint64_t *pc)
 
 /**
 * _strrev - reverses contents of a string
-* @s: string to be reversed
 * @buffer: output buffer
 * @cursor: buffer cursor
+* @s: string to be reversed
 * @pc: count of chars to write
 */
 void _strrev(char *buffer, short *cursor, char *s, uint64_t *pc)
