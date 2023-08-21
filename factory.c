@@ -15,12 +15,13 @@ void _rot13(char *buffer, short *cursor, char *s, uint64_t *pc)
 
 	while (s[i] != '\0')
 	{
-		if (isalpha(s[i]))
+		tmp = s[i];
+		if (isalpha(tmp))
 		{
-			_case = (bool)islower(s[i]) * 'a' + (bool)isupper(s[i]) * 'A';
-			tmp = (s[i] +  13 - _case) % 26 + _case;
-			buf_add_ch(buffer, cursor, tmp, pc);
+			_case = (bool)islower(tmp) * 'a' + (bool)isupper(tmp) * 'A';
+			tmp = (tmp +  13 - _case) % 26 + _case;
 		}
+		buf_add_ch(buffer, cursor, tmp, pc);
 		i++;
 	}
 }
