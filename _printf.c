@@ -148,7 +148,18 @@ int _printf(const char *format, ...)
 					break;
 				case 'd':
 				case 'i':
-					params.Int = va_arg(var_arg_list, int);
+					switch (format[j - 1])
+					{
+					case 'l':
+						params.Int = va_arg(var_arg_list, long);
+						break;
+					case 'h':
+						params.Int = (short)va_arg(var_arg_list, int);
+						break;
+					default:
+						params.Int = va_arg(var_arg_list, int);
+						break;
+					}
 					if (j != i + 1)
 					{
 						if (flag_set(&flags, '+') && params.Int >= 0)
