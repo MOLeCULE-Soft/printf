@@ -3,16 +3,17 @@
 
 #include <stdarg.h>
 #include <stdlib.h>
-#include <math.h>
 #include <stdint.h>
 #include <string.h>
 #include <stdio.h>
 #include <ctype.h>
+#include <unistd.h>
 
 #define OPTIONS  "+- 0#"
 #define SPECIFIERS {"d", "i", "x", "X", "s", "S", "p", "o", "u", "%", "c", "b"}
 #define SPEC_LENGTH 12
-
+#define WRITE_BUFFER_SIZE 1024
+#define CONV_BUFFER_SIZE 21
 
 /**
 * struct option - structure holding flags
@@ -33,12 +34,11 @@ typedef struct option
 	short width;
 } option;
 
-int _putchar(char);
+int _putchar(char c);
+int _write(char *buffer, int bytes);
 int _printf(const char *format, ...);
-int64_t print_number(int64_t n);
-uint64_t dec2bin(unsigned int n);
-int64_t dec2oct(unsigned int n);
-char *dec2hex(uint64_t n, char _case);
+char *base_conv(int64_t n, short base, char *buffer);
+char *dec2hex(uint64_t n, char _case, char *buffer);
 void update_flag(option *flags, char flag);
 short flag_set(option *flags, char flag);
 short _is_spec(char *spec);

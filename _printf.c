@@ -1,5 +1,4 @@
 #include "main.h"
-#include <stdio.h>
 
 int _printf(const char *format, ...);
 /**
@@ -15,18 +14,22 @@ int _printf(const char *format, ...)
 {
 	unsigned long int i = 0, j, k;
 	va_list var_arg_list;
-	char *s_param, *tmp_hex;
-	int int_param, count = 0;
+	char *s_param, *tmp;
+	int int_param;
+	short cursor = 0, base;
 	uint64_t u_int_param;
-	/*void *void_param;*/
 	option flags = {0, 0, 0, 0, 0, 0};
 	char cur_spec[3];
 	int flag_count;
+	char buffer[WRITE_BUFFER_SIZE];
+	char conv_buffer[CONV_BUFFER_SIZE];
 
+	memset(buffer, 0, WRITE_BUFFER_SIZE);
 	va_start(var_arg_list, format);
 	while (format != NULL && format[i] != '\0')
 	{
 		flag_count = 0;
+		base = 10;
 		if (format[i] == '%')
 		{
 			j = i + 1;
@@ -38,7 +41,7 @@ int _printf(const char *format, ...)
 				{
 					break;
 				}
-				else if(strchr(OPTIONS, format[j]) != NULL)
+				else if (strchr(OPTIONS, format[j]) != NULL)
 				{
 					update_flag(&flags, format[j]);
 					flag_count++;
@@ -56,11 +59,10 @@ int _printf(const char *format, ...)
 			{
 				case 'c':
 					int_param = va_arg(var_arg_list, int);
-					_putchar(int_param);
-					count++;
+					buffer[cursor++] = int_param;
 					i++;
 					break;
-				/*case 's':*/
+				case 's':
 				case 'x':
 				case 'X':
 				case 'S':
@@ -71,86 +73,91 @@ int _printf(const char *format, ...)
 						{
 							if (flag_set(&flags, '#'))
 							{
-								_putchar('0');
-								_putchar(format[j]);
-								count += 2;
+								buffer[cursor++] = '0';
+								buffer[cursor++] = format[j];
 							}
 						}
 						u_int_param = va_arg(var_arg_list, unsigned int);
-						s_param = dec2hex(u_int_param, format[j]);
+						tmp = dec2hex(u_int_param, format[j], conv_buffer);
+						strcpy(buffer + cursor, tmp);
+						cursor += strlen(tmp);
 					}
 					else if (format[j] == 'p')
 					{
 						u_int_param = va_arg(var_arg_list, uint64_t);
 						if (u_int_param == 0)
 						{
-							s_param = "(nil)";
+							strcpy(buffer + cursor, "(nil)");
+							cursor += 5;
 						}
 						else
 						{
-							s_param = dec2hex(u_int_param, 'x');
-							_putchar('0');
-							_putchar('x');
-							count += 2;
+							tmp = dec2hex(u_int_param, 'x', conv_buffer);
+							buffer[cursor++] = '0';
+							buffer[cursor++] = 'x';
+							strcpy(buffer + cursor, tmp);
+							cursor += strlen(tmp);
 						}
 					}
 					else
 					{
 						s_param = va_arg(var_arg_list, char *);
-					}
-					s_param = s_param == NULL ? "(null)" : s_param;
-					k = 0;
-					while (s_param[k] != '\0')
-					{
-						if (format[j] == 'S' && !isprint(s_param[k]))
+						s_param = s_param == NULL ? "(null)" : s_param;
+						if (format[j] == 'S')
 						{
-							tmp_hex = dec2hex(s_param[k], 'X');
-							_putchar('\\');
-							_putchar('x');
-							if (s_param[k] < 16)
+							k = 0;
+							while (s_param[k] != '\0')
 							{
-								_putchar('0');
-								_putchar(*tmp_hex);
+								if (!isprint(s_param[k]))
+								{
+									tmp = dec2hex(s_param[k], 'X', conv_buffer);
+									buffer[cursor++] = '\\';
+									buffer[cursor++] = 'x';
+									if (s_param[k] < 16)
+									{
+										buffer[cursor++] = '0';
+										buffer[cursor++] = *conv_buffer;
+									}
+									else
+									{
+										buffer[cursor++] = *conv_buffer;
+										buffer[cursor++] = *(conv_buffer + 1);
+									}
+								}
+								else
+								{
+									buffer[cursor++] = s_param[k];
+								}
+								k++;
 							}
-							else
-							{
-								_putchar(*tmp_hex);
-								_putchar(*(tmp_hex + 1));
-							}
-							count += 4;
 						}
 						else
 						{
-							_putchar(s_param[k]);
-							count++;
+							strcpy(buffer + cursor, s_param);
+							cursor += strlen(s_param);
 						}
-						k++;
 					}
-					/*if (u_int_param)*/
 					i++;
 					break;
-				/*case '%':
-					_putchar(format[j]);
-					count++;
+				case '%':
+					buffer[cursor++] = format[j];
 					i++;
-					break;*/
+					break;
 				case 'd':
 				case 'i':
 					int_param = va_arg(var_arg_list, int);
 					if (j != i + 1)
 					{
 						if (flag_set(&flags, '+') && int_param >= 0)
-						{
-							_putchar('+');
-							count++;
-						}
+							buffer[cursor++] = '+';
 						else if (flag_set(&flags, ' ') && int_param >= 0)
-						{
-							_putchar(' ');
-							count++;
-						}
+							buffer[cursor++] = ' ';
 					}
-					count += print_number(int_param);
+					if (int_param < 0)
+						buffer[cursor++] = '-';
+					tmp = base_conv(int_param, base, conv_buffer);
+					strcpy(buffer + cursor, tmp);
+					cursor += strlen(tmp);
 					i++;
 					break;
 				case 'b':
@@ -158,14 +165,12 @@ int _printf(const char *format, ...)
 				case 'o':
 					u_int_param = va_arg(var_arg_list, unsigned int);
 					if (format[j] == 'b')
-					{
-						u_int_param = dec2bin(u_int_param);
-					}
+						base = 2;
 					else if (format[j] == 'o')
-					{
-						u_int_param = dec2oct(u_int_param);
-					}
-					count += print_number(u_int_param);
+						base = 8;
+					tmp = base_conv(u_int_param, base, conv_buffer);
+					strcpy(buffer + cursor, tmp);
+					cursor += strlen(tmp);
 					i++;
 					break;
 				default:
@@ -174,12 +179,17 @@ int _printf(const char *format, ...)
 		}
 		else
 		{
-			_putchar(format[i]);
-			count++;
+			buffer[cursor++] = format[i];
 		}
 		i += flag_count;
 		i++;
 	}
+	if (cursor > 0)
+	{
+		buffer[cursor++] = '\0';
+		_write(buffer, cursor - 1);
+		/*printf("String:\n%s\nCount:%d\n", buffer, cursor - 1);*/
+	}
 	va_end(var_arg_list);
-	return (count);
+	return (cursor - 1);
 }

@@ -12,3 +12,15 @@ int _putchar(char ch)
 {
 	return (write(1, &ch, 1));
 }
+
+/**
+* _write - passes a buffer to write function
+* @buffer: buffer
+* @bytes: number of bytes to be written
+*
+* Return: number of bytes written
+*/
+int _write(char *buffer, int bytes)
+{
+	return (write(1, buffer, bytes));
+}

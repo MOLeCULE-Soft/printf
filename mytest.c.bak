@@ -4,8 +4,8 @@
 int main(void)
 {
 	int *addr = malloc(sizeof(int) * 10);
-	char *s;
 	int i;
+	char *s;
 
 	int a, b, c;
 	a = 0; b = -10; c = 10;
