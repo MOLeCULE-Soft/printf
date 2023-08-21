@@ -31,12 +31,13 @@ int _write(char *buffer, int bytes)
 * @buffer: char buffer
 * @cursor: buffer cursor
 * @ch: char to be added to buffer
+* @pc: count of chars printed
 *
 * Description: If buffer is already full, it will be
 * written to the stdout, emptied and cursor set to 0
 * before adding ch to buffer
 */
-void buf_add_ch(char *buffer, short *cursor, char ch)
+void buf_add_ch(char *buffer, short *cursor, char ch, uint64_t *pc)
 {
 	if (*cursor == WRITE_BUFFER_SIZE)
 	{
@@ -46,6 +47,7 @@ void buf_add_ch(char *buffer, short *cursor, char ch)
 	}
 	buffer[*cursor] = ch;
 	*cursor = *cursor + 1;
+	*pc = *pc + 1;
 }
 
 /**
@@ -53,6 +55,7 @@ void buf_add_ch(char *buffer, short *cursor, char ch)
 * @buffer: char buffer
 * @cursor: buffer cursor
 * @str: string to be added to buffer
+* @pc: count of chars printed
 *
 * Description: If buffer is already full, it will be
 * written to the stdout, emptied and cursor set to 0
@@ -61,7 +64,7 @@ void buf_add_ch(char *buffer, short *cursor, char ch)
 * str will be copied to fill the buffer and a recursive
 * call made with the rest of str.
 */
-void buf_add_str(char *buffer, short *cursor, char *str)
+void buf_add_str(char *buffer, short *cursor, char *str, uint64_t *pc)
 {
 	short space_left = WRITE_BUFFER_SIZE - *cursor;
 	short copied = 0;
@@ -75,6 +78,7 @@ void buf_add_str(char *buffer, short *cursor, char *str)
 	strncpy(buffer + *cursor, str, space_left);
 	copied = (short)strlen(str) < space_left ? (short)strlen(str) : space_left;
 	*cursor = *cursor + copied;
+	*pc = *pc + copied;
 	if (strlen(str + copied) > 0)
-		buf_add_str(buffer, cursor, str + copied);
+		buf_add_str(buffer, cursor, str + copied, pc);
 }
