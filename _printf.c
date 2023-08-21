@@ -68,6 +68,7 @@ int _printf(const char *format, ...)
 				case 'S':
 				case 'p':
 				case 'r':
+				case 'R':
 					if (format[j] == 'x' || format[j] == 'X')
 					{
 						if (j != i + 1)
