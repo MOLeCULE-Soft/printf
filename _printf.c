@@ -67,6 +67,7 @@ int _printf(const char *format, ...)
 				case 'X':
 				case 'S':
 				case 'p':
+				case 'r':
 					if (format[j] == 'x' || format[j] == 'X')
 					{
 						if (j != i + 1)
@@ -130,7 +131,10 @@ int _printf(const char *format, ...)
 						}
 						else
 						{
-							buf_add_str(buffer, &cursor, s_param, &pc);
+							if (format[j] == 'r')
+								_strrev(buffer, &cursor, s_param, &pc);
+							else
+								buf_add_str(buffer, &cursor, s_param, &pc);
 						}
 					}
 					i++;

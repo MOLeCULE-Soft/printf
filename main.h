@@ -10,8 +10,10 @@
 #include <unistd.h>
 
 #define OPTIONS  "+- 0#"
-#define SPECIFIERS {"d", "i", "x", "X", "s", "S", "p", "o", "u", "%", "c", "b"}
-#define SPEC_LENGTH 12
+#define SPECIFIERS {"d", "i", "x", "X", "s",\
+			"S", "p", "o", "u", "%",\
+			"c", "b", "r"}
+#define SPEC_LENGTH 13
 #define WRITE_BUFFER_SIZE 1024
 #define CONV_BUFFER_SIZE 21
 
@@ -44,5 +46,6 @@ short flag_set(option *flags, char flag);
 short _is_spec(char *spec);
 void buf_add_ch(char *buffer, short *cursor, char ch, uint64_t *pc);
 void buf_add_str(char *buffer, short *cursor, char *str, uint64_t *pc);
+void _strrev(char *buffer, short *cursor, char *s, uint64_t *pc);
 
 #endif

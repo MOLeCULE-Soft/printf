@@ -28,7 +28,7 @@ int _write(char *buffer, int bytes)
 
 /**
 * buf_add_ch - adds a char to the buffer
-* @buffer: char buffer
+* @buffer: output buffer
 * @cursor: buffer cursor
 * @ch: char to be added to buffer
 * @pc: count of chars printed
@@ -52,7 +52,7 @@ void buf_add_ch(char *buffer, short *cursor, char ch, uint64_t *pc)
 
 /**
 * buf_add_str - adds a string to the buffer
-* @buffer: char buffer
+* @buffer: output buffer
 * @cursor: buffer cursor
 * @str: string to be added to buffer
 * @pc: count of chars printed
@@ -81,4 +81,19 @@ void buf_add_str(char *buffer, short *cursor, char *str, uint64_t *pc)
 	*pc = *pc + copied;
 	if (strlen(str + copied) > 0)
 		buf_add_str(buffer, cursor, str + copied, pc);
+}
+
+/**
+* _strrev - reverses contents of a string
+* @s: string to be reversed
+* @buffer: output buffer
+* @cursor: buffer cursor
+* @pc: count of chars to write
+*/
+void _strrev(char *buffer, short *cursor, char *s, uint64_t *pc)
+{
+	int64_t end = strlen(s) - 1;
+
+	while (end >= 0)
+		buf_add_ch(buffer, cursor, s[end--], pc);
 }
