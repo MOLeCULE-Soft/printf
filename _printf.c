@@ -180,7 +180,7 @@ int _printf(const char *format, ...)
 	}
 	if (cursor > 0)
 	{
-		_write(buffer, cursor - 1);
+		_write(buffer, cursor);
 	}
 	va_end(var_arg_list);
 	return (pc);
