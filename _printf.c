@@ -183,7 +183,7 @@ int _printf(const char *format, ...)
 					if (flag_set(&flags, 'l') && format[j] != 'b')
 						params.UInt = va_arg(var_arg_list, unsigned long);
 					else if (flag_set(&flags, 'h') && format[j] != 'b')
-						params.UInt = (short)va_arg(var_arg_list, unsigned int);
+						params.UInt = va_arg(var_arg_list, unsigned int) % (USHRT_MAX + 1);
 					else
 						params.UInt = va_arg(var_arg_list, unsigned int);
 					if (format[j] == 'b')

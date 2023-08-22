@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <unistd.h>
+#include <limits.h>
 #include <stdbool.h>
 
 #define OPTIONS  "+- 0#lh"
