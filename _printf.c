@@ -79,15 +79,17 @@ int _printf(const char *format, ...)
 				case 'R':
 					if (format[j] == 'x' || format[j] == 'X')
 					{
-						if (flags.count > 0)
+						if (flag_set(&flags, '#'))
 						{
-							if (flag_set(&flags, '#'))
-							{
-								buf_add_ch(buffer, &cursor, '0', &pc);
-								buf_add_ch(buffer, &cursor, format[j], &pc);
-							}
+							buf_add_ch(buffer, &cursor, '0', &pc);
+							buf_add_ch(buffer, &cursor, format[j], &pc);
 						}
-						params.UInt = va_arg(var_arg_list, unsigned int);
+						if (flag_set(&flags, 'h'))
+							params.UInt = (unsigned short)va_arg(var_arg_list, unsigned int);
+						else if (flag_set(&flags, 'l'))
+							params.UInt = va_arg(var_arg_list, unsigned long);
+						else
+							params.UInt = va_arg(var_arg_list, unsigned int);
 						tmp = dec2hex(params.UInt, format[j], conv_buffer);
 						buf_add_str(buffer, &cursor, tmp, &pc);
 					}
