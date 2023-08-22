@@ -180,12 +180,7 @@ int _printf(const char *format, ...)
 				case 'b':
 				case 'u':
 				case 'o':
-					if (flag_set(&flags, 'l'))
-						params.UInt = va_arg(var_arg_list, unsigned long);
-					else if (flag_set(&flags, 'h'))
-						params.UInt = (short)va_arg(var_arg_list, unsigned int);
-					else
-						params.UInt = va_arg(var_arg_list, unsigned int);
+					params.UInt = va_arg(var_arg_list, unsigned int);
 					if (format[j] == 'b')
 						base = 2;
 					else if (format[j] == 'o')
