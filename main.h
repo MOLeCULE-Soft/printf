@@ -10,7 +10,7 @@
 #include <unistd.h>
 #include <stdbool.h>
 
-#define OPTIONS  "+- 0#"
+#define OPTIONS  "+- 0#lh"
 #define SPECIFIERS {	"d", "i", "x", "X", "s",\
 			"S", "p", "o", "u", "%",\
 			"c", "b", "r", "R"}
@@ -26,6 +26,9 @@
 * @hash: # flag
 * @zero: 0 flag
 * @width: width specifier
+* @count: flag occurences
+* @_long: long integer
+* @_short: short integer
 */
 typedef struct option
 {
@@ -36,6 +39,8 @@ typedef struct option
 	short zero;
 	short width;
 	short count;
+	short _long;
+	short _short;
 } option;
 
 /**

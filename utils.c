@@ -87,6 +87,12 @@ void update_flag(option *flags, char flag)
 		case '0':
 			flags->zero = 1;
 			break;
+		case 'h':
+			flags->_short = 1;
+			break;
+		case 'l':
+			flags->_long = 1;
+			break;
 		default:
 			break;
 	}
@@ -113,6 +119,10 @@ short flag_set(option *flags, char flag)
 			return (flags->hash);
 		case '0':
 			return (flags->zero);
+		case 'l':
+			return (flags->_long);
+		case 'h':
+			return (flags->_short);
 		default:
 			return (0);
 	}

@@ -15,14 +15,15 @@ int _printf(const char *format, ...)
 	va_list var_arg_list;
 	char *tmp;
 	short cursor = 0, base;
-	uint64_t pc , i, j, k;
-	option flags = {0, 0, 0, 0, 0, 0, 0};
+	uint64_t pc, i, j, k;
+	option flags = {0};
 	param params;
 	char cur_spec[3];
 	char buffer[WRITE_BUFFER_SIZE];
 	char conv_buffer[CONV_BUFFER_SIZE];
 
-	memset(buffer, 0, WRITE_BUFFER_SIZE);
+	/*memset(buffer, 0, WRITE_BUFFER_SIZE);*/
+	bzero(buffer, WRITE_BUFFER_SIZE);
 	va_start(var_arg_list, format);
 	i = 0;
 	pc = 0;
@@ -30,6 +31,8 @@ int _printf(const char *format, ...)
 	{
 		flags.count = 0;
 		base = 10;
+		flags._long = 0;
+		flags._short = 0;
 		if (format[i] == '%')
 		{
 			j = i + 1;
@@ -39,6 +42,11 @@ int _printf(const char *format, ...)
 				cur_spec[1] = '\0';
 				if (_is_spec(cur_spec))
 				{
+					break;
+				}
+				else if (flag_set(&flags, 'l') || flag_set(&flags, 'h'))
+				{
+					j = i + 1;
 					break;
 				}
 				else if (strchr(OPTIONS, format[j]) != NULL)
@@ -58,7 +66,7 @@ int _printf(const char *format, ...)
 			switch (format[j])
 			{
 				case 'c':
-					params.Int = va_arg(var_arg_list, int);
+					params.Int = (char)va_arg(var_arg_list, int);
 					buf_add_ch(buffer, &cursor, params.Int, &pc);
 					i++;
 					break;
@@ -71,7 +79,7 @@ int _printf(const char *format, ...)
 				case 'R':
 					if (format[j] == 'x' || format[j] == 'X')
 					{
-						if (j != i + 1)
+						if (flags.count > 0)
 						{
 							if (flag_set(&flags, '#'))
 							{
@@ -148,19 +156,13 @@ int _printf(const char *format, ...)
 					break;
 				case 'd':
 				case 'i':
-					switch (format[j - 1])
-					{
-					case 'l':
+					if (flag_set(&flags, 'l'))
 						params.Int = va_arg(var_arg_list, long);
-						break;
-					case 'h':
+					else if (flag_set(&flags, 'h'))
 						params.Int = (short)va_arg(var_arg_list, int);
-						break;
-					default:
+					else
 						params.Int = va_arg(var_arg_list, int);
-						break;
-					}
-					if (j != i + 1)
+					if (flags.count > 0)
 					{
 						if (flag_set(&flags, '+') && params.Int >= 0)
 							buf_add_ch(buffer, &cursor, '+', &pc);
@@ -186,6 +188,9 @@ int _printf(const char *format, ...)
 					i++;
 					break;
 				default:
+					/*while (format[i + 1] == '\0' && format[i + 1] == ' ')
+						i++;
+					*/
 					break;
 			}
 		}
