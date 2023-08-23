@@ -205,9 +205,11 @@ int _printf(const char *format, ...)
 				tmp = base_conv(params.Int, base, conv_buffer);
 				buf_add_str(buffer, &cursor, tmp, &pc);
 				break;
-			case 'b':
-			case 'u':
 			case 'o':
+				if (flags.zero)
+					buf_add_ch(buffer, &cursor, '0', &pc);
+			case 'u':
+			case 'b':
 				if (lengths._long && *format != 'b')
 					params.UInt = va_arg(var_arg_list, unsigned long);
 				else if (lengths._short && *format != 'b')
@@ -218,8 +220,7 @@ int _printf(const char *format, ...)
 					base = 2;
 				else if (*format == 'o')
 					base = 8;
-				if (flags.zero)
-					buf_add_ch(buffer, &cursor, '0', &pc);
+
 				tmp = base_conv(params.UInt, base, conv_buffer);
 				buf_add_str(buffer, &cursor, tmp, &pc);
 				break;
