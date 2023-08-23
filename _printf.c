@@ -34,6 +34,8 @@ int _printf(const char *format, ...)
 		init_options(&options);
 		if (*format == '%')
 		{
+			if (*format == 1)
+				return (-1);
 			format++;
 			if (isspace(*format) || *format == '\0')
 				return (-1);
