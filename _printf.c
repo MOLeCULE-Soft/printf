@@ -197,9 +197,9 @@ int _printf(const char *format, ...)
 				else
 					params.Int = va_arg(var_arg_list, int);
 				if (flags.plus && params.Int >= 0)
-						buf_add_ch(buffer, &cursor, '+', &pc);
-					else if (flags.space && params.Int >= 0)
-						buf_add_ch(buffer, &cursor, ' ', &pc);
+					buf_add_ch(buffer, &cursor, '+', &pc);
+				else if (flags.space && params.Int >= 0)
+					buf_add_ch(buffer, &cursor, ' ', &pc);
 				if (params.Int < 0)
 					buf_add_ch(buffer, &cursor, '-', &pc);
 				tmp = base_conv(params.Int, base, conv_buffer);
@@ -218,6 +218,8 @@ int _printf(const char *format, ...)
 					base = 2;
 				else if (*format == 'o')
 					base = 8;
+				if (flags.zero)
+					buf_add_ch(buffer, &cursor, '0', &pc);
 				tmp = base_conv(params.UInt, base, conv_buffer);
 				buf_add_str(buffer, &cursor, tmp, &pc);
 				break;
