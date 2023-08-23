@@ -206,10 +206,10 @@ int _printf(const char *format, ...)
 				buf_add_str(buffer, &cursor, tmp, &pc);
 				break;
 			case 'o':
-				if (flags.zero)
-					buf_add_ch(buffer, &cursor, '0', &pc);
 			case 'u':
 			case 'b':
+				if (flags.zero && *format == 'o')
+					buf_add_ch(buffer, &cursor, '0', &pc);
 				if (lengths._long && *format != 'b')
 					params.UInt = va_arg(var_arg_list, unsigned long);
 				else if (lengths._short && *format != 'b')
