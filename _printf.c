@@ -3,7 +3,7 @@
 int _printf(const char *format, ...);
 /**
 * _printf - prints formatted string to
-* the
+* the stdout
 * @format: format specifications or option
 * ...: [ARGUMENTS], varaible params
 *
