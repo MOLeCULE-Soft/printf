@@ -13,7 +13,7 @@ char *base_conv(int64_t n, short base, char *buffer)
 {
 	short tmp_cur = CONV_BUFFER_SIZE - 1;
 
-	memset(buffer, 0, CONV_BUFFER_SIZE);
+	bzero(buffer, CONV_BUFFER_SIZE);
 	buffer[tmp_cur--] = '\0';
 	if (n < 0)
 		n = -n;
@@ -44,7 +44,7 @@ char *dec2hex(uint64_t n, char _case, char *buffer)
 {
 	short rem, tmp_cur = CONV_BUFFER_SIZE - 1;
 
-	memset(buffer, 0, CONV_BUFFER_SIZE);
+	bzero(buffer, CONV_BUFFER_SIZE);
 	buffer[tmp_cur--] = '\0';
 	if (n < 10)
 	{
@@ -65,10 +65,10 @@ char *dec2hex(uint64_t n, char _case, char *buffer)
 
 /**
 * update_flag - updates flag
-* @flags: structure of options
-* @flag: character for flag
+* @flags: structure of flags
+* @flag: flag to be updated
 */
-void update_flag(option *flags, char flag)
+void update_flag(opt_flag *flags, char flag)
 {
 	switch (flag)
 	{
@@ -87,11 +87,25 @@ void update_flag(option *flags, char flag)
 		case '0':
 			flags->zero = 1;
 			break;
+		default:
+			break;
+	}
+}
+
+/**
+* update_length - updates lengths
+* @lengths: structure of lengths
+* @length: length to be updated
+*/
+void update_length(opt_length *lengths, char length)
+{
+	switch (length)
+	{
 		case 'h':
-			flags->_short = 1;
+			lengths->_short = 1;
 			break;
 		case 'l':
-			flags->_long = 1;
+			lengths->_long = 1;
 			break;
 		default:
 			break;
@@ -99,52 +113,14 @@ void update_flag(option *flags, char flag)
 }
 
 /**
-* flag_set - checks if a flag is set
-* @flags: structure of options
-* @flag: character flag to check in options
-*
-* Return: 1 if flag is set, otherwise 0
+* init_options - initializes options to 0
+* @options: structure of options
 */
-short flag_set(option *flags, char flag)
+void init_options(option *options)
 {
-	switch (flag)
-	{
-		case '+':
-			return (flags->plus);
-		case '-':
-			return (flags->minus);
-		case ' ':
-			return (flags->space);
-		case '#':
-			return (flags->hash);
-		case '0':
-			return (flags->zero);
-		case 'l':
-			return (flags->_long);
-		case 'h':
-			return (flags->_short);
-		default:
-			return (0);
-	}
-}
-
-/**
-* _is_spec - checks if a string is a spec
-* @spec: string to check
-*
-* Return: 1 if is spec otherwise 0
-*/
-short _is_spec(char *spec)
-{
-	int i;
-	const char *my_specs[] = SPECIFIERS;
-
-	for (i = 0; i < SPEC_LENGTH; i++)
-	{
-		if (strcmp(spec, my_specs[i]) == 0)
-		{
-			return (1);
-		}
-	}
-	return (0);
+	options->flag = 0;
+	options->width = 0;
+	options->precision = 0;
+	options->length = 0;
+	options->conversion = 0;
 }

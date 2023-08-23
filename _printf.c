@@ -15,198 +15,217 @@ int _printf(const char *format, ...)
 	va_list var_arg_list;
 	char *tmp;
 	short cursor = 0, base;
-	uint64_t pc, i, j, k;
-	option flags = {0};
+	uint64_t pc, k;
+	opt_flag flags = {0};
+	opt_length lengths = {0};
+	option options;
+	config configs = {0};
 	param params;
-	char cur_spec[3];
 	char buffer[WRITE_BUFFER_SIZE];
 	char conv_buffer[CONV_BUFFER_SIZE];
 
-	/*memset(buffer, 0, WRITE_BUFFER_SIZE);*/
 	bzero(buffer, WRITE_BUFFER_SIZE);
 	va_start(var_arg_list, format);
-	i = 0;
 	pc = 0;
-	while (format != NULL && format[i] != '\0')
+	while (*format)
 	{
-		flags.count = 0;
-		base = 10;
-		flags._long = 0;
-		flags._short = 0;
-		if (format[i] == '%')
+		init_options(&options);
+		if (*format == '%')
 		{
-			j = i + 1;
-			while (format[j] != '\0')
+			format++;
+			configs.spec_start = (char *)format;
+			while (*format)
 			{
-				cur_spec[0] = format[j];
-				cur_spec[1] = '\0';
-				if (_is_spec(cur_spec))
+				k = options.width + options.precision + options.length;
+				if (strchr(SPECIFIERS, *format) != NULL)
 				{
+					options.conversion = 1;
 					break;
 				}
-				else if (flag_set(&flags, 'l') || flag_set(&flags, 'h'))
+				else if (strchr(FLAGS, *format) != NULL)
 				{
-					j = i + 1;
-					break;
+					if (options.width + options.precision + options.length)
+						break;
+					update_flag(&flags, *format);
+					options.flag = 1;
 				}
-				else if (strchr(OPTIONS, format[j]) != NULL)
+				else if (isdigit(*format) && !k)
 				{
-					update_flag(&flags, format[j]);
-					flags.count++;
-					j++;
+					tmp = (char *)format++;
+					while (isdigit(*format))
+						format++;
+					bzero(conv_buffer, CONV_BUFFER_SIZE);
+					strncpy(conv_buffer, tmp, format - tmp);
+					configs.width = atoll(conv_buffer);
+					options.width = 1;
 					continue;
+				}
+				else if (*format == '.' && !(options.precision + options.length))
+				{
+					tmp = (char *) ++format;
+					while (isdigit(*format))
+						format++;
+					if (format - tmp > 0)
+					{
+						bzero(conv_buffer, CONV_BUFFER_SIZE);
+						strncpy(conv_buffer, tmp, format - tmp);
+						configs.precision = atoll(conv_buffer);
+						options.precision = 1;
+						continue;
+					}
+					break;
+
+				}
+				else if (strchr(LENGTHS, *format) != NULL && !options.length)
+				{
+					update_length(&lengths, *format);
+					options.length = 1;
 				}
 				else
 				{
-					j = i + 1;
 					break;
 				}
+				format++;
 			}
 
-			switch (format[j])
+			if (!options.conversion)
 			{
-				case 'c':
-					params.Int = (char)va_arg(var_arg_list, int);
-					buf_add_ch(buffer, &cursor, params.Int, &pc);
-					i++;
-					break;
-				case 's':
-				case 'x':
-				case 'X':
-				case 'S':
-				case 'p':
-				case 'r':
-				case 'R':
-					if (format[j] == 'x' || format[j] == 'X')
+				format = configs.spec_start;
+				break;
+			}
+			base = 10;
+			switch (*format)
+			{
+			case 'c':
+				params.Int = (char)va_arg(var_arg_list, int);
+				buf_add_ch(buffer, &cursor, params.Int, &pc);
+				break;
+			case 's':
+			case 'x':
+			case 'X':
+			case 'S':
+			case 'p':
+			case 'r':
+			case 'R':
+				if (*format == 'x' || *format == 'X')
+				{
+					if (flags.hash)
 					{
-						if (flag_set(&flags, '#'))
-						{
-							buf_add_ch(buffer, &cursor, '0', &pc);
-							buf_add_ch(buffer, &cursor, format[j], &pc);
-						}
-						if (flag_set(&flags, 'h'))
-							params.UInt = (unsigned short)va_arg(var_arg_list, unsigned int);
-						else if (flag_set(&flags, 'l'))
-							params.UInt = va_arg(var_arg_list, unsigned long);
-						else
-							params.UInt = va_arg(var_arg_list, unsigned int);
-						tmp = dec2hex(params.UInt, format[j], conv_buffer);
-						buf_add_str(buffer, &cursor, tmp, &pc);
+						buf_add_ch(buffer, &cursor, '0', &pc);
+						buf_add_ch(buffer, &cursor, *format, &pc);
 					}
-					else if (format[j] == 'p')
+					if (lengths._short)
+						params.UInt = (unsigned short)va_arg(var_arg_list, unsigned int);
+					else if (lengths._long)
+						params.UInt = va_arg(var_arg_list, unsigned long);
+					else
+						params.UInt = va_arg(var_arg_list, unsigned int);
+					tmp = dec2hex(params.UInt, *format, conv_buffer);
+					buf_add_str(buffer, &cursor, tmp, &pc);
+				}
+				else if (*format == 'p')
+				{
+					params.UInt = va_arg(var_arg_list, uint64_t);
+					if (params.UInt == 0)
 					{
-						params.UInt = va_arg(var_arg_list, uint64_t);
-						if (params.UInt == 0)
-						{
-							buf_add_str(buffer, &cursor, "(nil)", &pc);
-						}
-						else
-						{
-							tmp = dec2hex(params.UInt, 'x', conv_buffer);
-							buf_add_ch(buffer, &cursor, '0', &pc);
-							buf_add_ch(buffer, &cursor, 'x', &pc);
-							buf_add_str(buffer, &cursor, tmp, &pc);
-						}
+						buf_add_str(buffer, &cursor, "(nil)", &pc);
 					}
 					else
 					{
-						params.String = va_arg(var_arg_list, char *);
-						params.String = params.String == NULL ? "(null)" : params.String;
-						if (format[j] == 'S')
+						tmp = dec2hex(params.UInt, 'x', conv_buffer);
+						buf_add_ch(buffer, &cursor, '0', &pc);
+						buf_add_ch(buffer, &cursor, 'x', &pc);
+						buf_add_str(buffer, &cursor, tmp, &pc);
+					}
+				}
+				else
+				{
+					params.String = va_arg(var_arg_list, char *);
+					params.String = params.String == NULL ? "(null)" : params.String;
+					if (*format == 'S')
+					{
+						k = 0;
+						while (params.String[k] != '\0')
 						{
-							k = 0;
-							while (params.String[k] != '\0')
+							if (!isprint(params.String[k]))
 							{
-								if (!isprint(params.String[k]))
+								tmp = dec2hex(params.String[k], 'X', conv_buffer);
+								buf_add_ch(buffer, &cursor, '\\', &pc);
+								buf_add_ch(buffer, &cursor, 'x', &pc);
+								if (params.String[k] < 16)
 								{
-									tmp = dec2hex(params.String[k], 'X', conv_buffer);
-									buf_add_ch(buffer, &cursor, '\\', &pc);
-									buf_add_ch(buffer, &cursor, 'x', &pc);
-									if (params.String[k] < 16)
-									{
-										buf_add_ch(buffer, &cursor, '0', &pc);
-										buf_add_ch(buffer, &cursor, *tmp, &pc);
-									}
-									else
-									{
-										buf_add_ch(buffer, &cursor, *tmp, &pc);
-										buf_add_ch(buffer, &cursor, *(tmp + 1), &pc);
-									}
+									buf_add_ch(buffer, &cursor, '0', &pc);
+									buf_add_ch(buffer, &cursor, *tmp, &pc);
 								}
 								else
 								{
-									buf_add_ch(buffer, &cursor, params.String[k], &pc);
+									buf_add_ch(buffer, &cursor, *tmp, &pc);
+									buf_add_ch(buffer, &cursor, *(tmp + 1), &pc);
 								}
-								k++;
 							}
-						}
-						else
-						{
-							if (format[j] == 'r')
-								_strrev(buffer, &cursor, params.String, &pc);
-							else if (format[j] == 'R')
-								_rot13(buffer, &cursor, params.String, &pc);
 							else
-								buf_add_str(buffer, &cursor, params.String, &pc);
+							{
+								buf_add_ch(buffer, &cursor, params.String[k], &pc);
+							}
+							k++;
 						}
 					}
-					i++;
-					break;
-				case '%':
-					buf_add_ch(buffer, &cursor, format[j], &pc);
-					i++;
-					break;
-				case 'd':
-				case 'i':
-					if (flag_set(&flags, 'l'))
-						params.Int = va_arg(var_arg_list, long);
-					else if (flag_set(&flags, 'h'))
-						params.Int = (short)va_arg(var_arg_list, int);
 					else
-						params.Int = va_arg(var_arg_list, int);
-					if (flags.count > 0)
 					{
-						if (flag_set(&flags, '+') && params.Int >= 0)
-							buf_add_ch(buffer, &cursor, '+', &pc);
-						else if (flag_set(&flags, ' ') && params.Int >= 0)
-							buf_add_ch(buffer, &cursor, ' ', &pc);
+						if (*format == 'r')
+							_strrev(buffer, &cursor, params.String, &pc);
+						else if (*format == 'R')
+							_rot13(buffer, &cursor, params.String, &pc);
+						else
+							buf_add_str(buffer, &cursor, params.String, &pc);
 					}
-					if (params.Int < 0)
-						buf_add_ch(buffer, &cursor, '-', &pc);
-					tmp = base_conv(params.Int, base, conv_buffer);
-					buf_add_str(buffer, &cursor, tmp, &pc);
-					i++;
-					break;
-				case 'b':
-				case 'u':
-				case 'o':
-					if (flag_set(&flags, 'l') && format[j] != 'b')
-						params.UInt = va_arg(var_arg_list, unsigned long);
-					else if (flag_set(&flags, 'h') && format[j] != 'b')
-						params.UInt = va_arg(var_arg_list, unsigned int) % (USHRT_MAX + 1);
-					else
-						params.UInt = va_arg(var_arg_list, unsigned int);
-					if (format[j] == 'b')
-						base = 2;
-					else if (format[j] == 'o')
-						base = 8;
-					tmp = base_conv(params.UInt, base, conv_buffer);
-					buf_add_str(buffer, &cursor, tmp, &pc);
-					i++;
-					break;
-				default:
-					/*while (format[i + 1] == '\0' && format[i + 1] == ' ')
-						i++;
-					*/
-					break;
+				}
+				break;
+			case '%':
+				buf_add_ch(buffer, &cursor, *format, &pc);
+				break;
+			case 'd':
+			case 'i':
+				if (lengths._long)
+					params.Int = va_arg(var_arg_list, long);
+				else if (lengths._short)
+					params.Int = (short)va_arg(var_arg_list, int);
+				else
+					params.Int = va_arg(var_arg_list, int);
+				if (flags.plus && params.Int >= 0)
+						buf_add_ch(buffer, &cursor, '+', &pc);
+					else if (flags.space && params.Int >= 0)
+						buf_add_ch(buffer, &cursor, ' ', &pc);
+				if (params.Int < 0)
+					buf_add_ch(buffer, &cursor, '-', &pc);
+				tmp = base_conv(params.Int, base, conv_buffer);
+				buf_add_str(buffer, &cursor, tmp, &pc);
+				break;
+			case 'b':
+			case 'u':
+			case 'o':
+				if (lengths._long && *format != 'b')
+					params.UInt = va_arg(var_arg_list, unsigned long);
+				else if (lengths._short && *format != 'b')
+					params.UInt = va_arg(var_arg_list, unsigned int) % (USHRT_MAX + 1);
+				else
+					params.UInt = va_arg(var_arg_list, unsigned int);
+				if (*format == 'b')
+					base = 2;
+				else if (*format == 'o')
+					base = 8;
+				tmp = base_conv(params.UInt, base, conv_buffer);
+				buf_add_str(buffer, &cursor, tmp, &pc);
+				break;
+			default:
+				break;
 			}
 		}
 		else
 		{
-			buf_add_ch(buffer, &cursor, format[i], &pc);
+			buf_add_ch(buffer, &cursor, *format, &pc);
 		}
-		i += flags.count;
-		i++;
+		format++;
 	}
 	if (cursor > 0)
 	{
