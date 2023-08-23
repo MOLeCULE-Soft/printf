@@ -35,6 +35,8 @@ int _printf(const char *format, ...)
 		if (*format == '%')
 		{
 			format++;
+			if (isspace(*format) || *format == '\0')
+				return (-1);
 			configs.spec_start = (char *)format;
 			while (*format)
 			{
