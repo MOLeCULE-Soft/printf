@@ -208,8 +208,8 @@ int _printf(const char *format, ...)
 			case 'o':
 			case 'u':
 			case 'b':
-				if (flags.zero && *format == 'o')
-					buf_add_ch(buffer, &cursor, '0', &pc);
+				/*if (flags.zero && *format == 'o')
+					buf_add_ch(buffer, &cursor, '0', &pc);*/
 				if (lengths._long && *format != 'b')
 					params.UInt = va_arg(var_arg_list, unsigned long);
 				else if (lengths._short && *format != 'b')
