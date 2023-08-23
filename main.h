@@ -100,4 +100,5 @@ void buf_add_ch(char *buffer, short *cursor, char ch, uint64_t *pc);
 void buf_add_str(char *buffer, short *cursor, char *str, uint64_t *pc);
 void _strrev(char *buffer, short *cursor, char *s, uint64_t *pc);
 void _rot13(char *buffer, short *cursor, char *s, uint64_t *pc);
+
 #endif
