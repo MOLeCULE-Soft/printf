@@ -27,6 +27,8 @@ int _printf(const char *format, ...)
 	bzero(buffer, WRITE_BUFFER_SIZE);
 	va_start(var_arg_list, format);
 	pc = 0;
+	if (format == NULL)
+		return (-1);
 	while (*format)
 	{
 		init_options(&options);
