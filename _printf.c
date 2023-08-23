@@ -2,7 +2,7 @@
 
 int _printf(const char *format, ...);
 /**
-* _printf - prints formatted string
+* _printf - prints formatted string to
 * @format: format specifications or option
 * ...: [ARGUMENTS], varaible params
 *
