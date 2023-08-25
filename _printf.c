@@ -14,7 +14,7 @@ int _printf(const char *format, ...);
 int _printf(const char *format, ...)
 {
 	va_list var_arg_list;
-	char *tmp;
+	char *tmp, *tmp0;
 	short cursor = 0, base;
 	uint64_t pc;
 	int64_t k;
@@ -137,49 +137,62 @@ int _printf(const char *format, ...)
 			case 'p':
 			case 'r':
 			case 'R':
-				if (*format == 'x' || *format == 'X')
+			if (*format == 'x' || *format == 'X')
+			{
+				if (lengths._short)
+					params.UInt = (unsigned short)va_arg(var_arg_list, unsigned int);
+				else if (lengths._long)
+					params.UInt = va_arg(var_arg_list, unsigned long);
+				else
+					params.UInt = va_arg(var_arg_list, unsigned int);
+				tmp = dec2hex(params.UInt, *format, conv_buffer);
+				if (flags.hash && params.UInt != 0)
 				{
-					if (lengths._short)
-						params.UInt = (unsigned short)va_arg(var_arg_list, unsigned int);
-					else if (lengths._long)
-						params.UInt = va_arg(var_arg_list, unsigned long);
-					else
-						params.UInt = va_arg(var_arg_list, unsigned int);
-					if (flags.hash && params.UInt != 0)
+					tmp0 = malloc(strlen(tmp) + 3);
+					if (tmp0)
 					{
-						buf_add_ch(buffer, &cursor, '0', &pc);
-						buf_add_ch(buffer, &cursor, *format, &pc);
+						*(tmp0) = '0';
+						*(tmp0 + 1) = *format;
+						strcpy(tmp0 + 2, tmp);
+						configs.width_malloc = 1;
+						tmp = tmp0;
 					}
-					tmp = dec2hex(params.UInt, *format, conv_buffer);
-					buf_add_str(buffer, &cursor, tmp, &pc);
 				}
-				else if (*format == 'p')
+				if (options.width && strlen(tmp) <= configs.width)
 				{
-					params.UInt = va_arg(var_arg_list, uint64_t);
-					if (params.UInt == 0)
-					{
-						buf_add_str(buffer, &cursor, "(nil)", &pc);
-					}
-					else
-					{
-						tmp = dec2hex(params.UInt, 'x', conv_buffer);
-						buf_add_ch(buffer, &cursor, '0', &pc);
-						buf_add_ch(buffer, &cursor, 'x', &pc);
-						buf_add_str(buffer, &cursor, tmp, &pc);
-					}
+					w_buf_add_str(&configs, &flags, &tmp);
+				}
+				buf_add_str(buffer, &cursor, tmp, &pc);
+				if (configs.width_malloc)
+					free(tmp);
+			}
+			else if (*format == 'p')
+			{
+				params.UInt = va_arg(var_arg_list, uint64_t);
+				if (params.UInt == 0)
+				{
+					buf_add_str(buffer, &cursor, "(nil)", &pc);
 				}
 				else
 				{
-					params.String = va_arg(var_arg_list, char *);
-					params.String = params.String == NULL ? "(null)" : params.String;
-					if (*format == 'r')
-						_strrev(buffer, &cursor, params.String, &pc);
-					else if (*format == 'R')
-						_rot13(buffer, &cursor, params.String, &pc);
-					else
-						buf_add_str(buffer, &cursor, params.String, &pc);
+					tmp = dec2hex(params.UInt, 'x', conv_buffer);
+					buf_add_ch(buffer, &cursor, '0', &pc);
+					buf_add_ch(buffer, &cursor, 'x', &pc);
+					buf_add_str(buffer, &cursor, tmp, &pc);
 				}
-				break;
+			}
+			else
+			{
+				params.String = va_arg(var_arg_list, char *);
+				params.String = params.String == NULL ? "(null)" : params.String;
+				if (*format == 'r')
+					_strrev(buffer, &cursor, params.String, &pc);
+				else if (*format == 'R')
+					_rot13(buffer, &cursor, params.String, &pc);
+				else
+					buf_add_str(buffer, &cursor, params.String, &pc);
+			}
+			break;
 			case 'S':
 				params.String = va_arg(var_arg_list, char *);
 				params.String = params.String == NULL ? "(null)" : params.String;
