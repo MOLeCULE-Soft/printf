@@ -15,5 +15,17 @@ int main(void)
     printf("[%#15x]\n", USHRT_MAX);
     _printf("[%#-15x]\n", USHRT_MAX);
     printf("[%#-15x]\n", USHRT_MAX);
+    _printf("[%c]\n", 65);
+    printf("[%c]\n", 65);
+    _printf("[%5c]\n", 65);
+    printf("[%5c]\n", 65);
+    _printf("[%-5c]\n", 65);
+    printf("[%-5c]\n", 65);
+    _printf("[%s]\n", "Felix");
+    printf("[%s]\n", "Felix");
+    _printf("[%10s]\n", "Felix");
+    printf("[%10s]\n", "Felix");
+    _printf("[%-10s]\n", "Felix");
+    printf("[%-10s]\n", "Felix");
     return (0);
 }

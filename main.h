@@ -69,6 +69,8 @@ typedef struct opt_length
 * @precision: value of precision
 * @spec_start: position after %
 * @width_buffer: buffer if width is set
+* @width_malloc: flag if there is malloc for width
+* @tmp_malloc: flag if there is malloc for tmp
 */
 typedef struct config
 {
@@ -77,6 +79,7 @@ typedef struct config
 	char *spec_start;
 	char *width_buffer;
 	short width_malloc;
+	short tmp_malloc;
 } config;
 
 /**

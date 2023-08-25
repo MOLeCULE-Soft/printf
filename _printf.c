@@ -35,6 +35,7 @@ int _printf(const char *format, ...)
 	{
 		init_options(&options);
 		configs.width_malloc = 0;
+		configs.tmp_malloc = 0;
 		if (*format == '%')
 		{
 			if (*format == 1)
@@ -129,7 +130,20 @@ int _printf(const char *format, ...)
 			{
 			case 'c':
 				params.Int = (char)va_arg(var_arg_list, int);
-				buf_add_ch(buffer, &cursor, params.Int, &pc);
+				if (options.width && 1 <= configs.width)
+				{
+					bzero(conv_buffer, CONV_BUFFER_SIZE);
+					*conv_buffer = params.Int;
+					tmp = (char *)conv_buffer;
+					w_buf_add_str(&configs, &flags, &tmp);
+					buf_add_str(buffer, &cursor, tmp, &pc);
+					if (configs.width_malloc)
+						free(tmp);
+				}
+				else
+				{
+					buf_add_ch(buffer, &cursor, params.Int, &pc);
+				}
 				break;
 			case 's':
 			case 'x':
@@ -154,7 +168,7 @@ int _printf(const char *format, ...)
 						*(tmp0) = '0';
 						*(tmp0 + 1) = *format;
 						strcpy(tmp0 + 2, tmp);
-						configs.width_malloc = 1;
+						configs.tmp_malloc = 1;
 						tmp = tmp0;
 					}
 				}
@@ -163,6 +177,8 @@ int _printf(const char *format, ...)
 					w_buf_add_str(&configs, &flags, &tmp);
 				}
 				buf_add_str(buffer, &cursor, tmp, &pc);
+				if (configs.tmp_malloc)
+					free(tmp0);
 				if (configs.width_malloc)
 					free(tmp);
 			}
@@ -171,26 +187,54 @@ int _printf(const char *format, ...)
 				params.UInt = va_arg(var_arg_list, uint64_t);
 				if (params.UInt == 0)
 				{
-					buf_add_str(buffer, &cursor, "(nil)", &pc);
+					tmp = "(nil)";
 				}
 				else
 				{
 					tmp = dec2hex(params.UInt, 'x', conv_buffer);
-					buf_add_ch(buffer, &cursor, '0', &pc);
-					buf_add_ch(buffer, &cursor, 'x', &pc);
-					buf_add_str(buffer, &cursor, tmp, &pc);
+					tmp0 = malloc(strlen(tmp) + 3);
+					if (tmp0)
+					{
+						*(tmp0) = '0';
+						*(tmp0 + 1) = 'x';
+						strcpy(tmp0 + 2, tmp);
+						configs.tmp_malloc = 1;
+						tmp = tmp0;
+					}
 				}
+				if (options.width && strlen(tmp) <= configs.width)
+				{
+					w_buf_add_str(&configs, &flags, &tmp);
+				}
+				buf_add_str(buffer, &cursor, tmp, &pc);
+				if (configs.tmp_malloc)
+					free(tmp0);
+				if (configs.width_malloc)
+					free(tmp);
 			}
 			else
 			{
 				params.String = va_arg(var_arg_list, char *);
 				params.String = params.String == NULL ? "(null)" : params.String;
 				if (*format == 'r')
+				{
 					_strrev(buffer, &cursor, params.String, &pc);
+				}
 				else if (*format == 'R')
+				{
 					_rot13(buffer, &cursor, params.String, &pc);
+				}
 				else
-					buf_add_str(buffer, &cursor, params.String, &pc);
+				{
+					tmp = params.String;
+					if (options.width && strlen(tmp) <= configs.width)
+					{
+						w_buf_add_str(&configs, &flags, &tmp);
+					}
+					buf_add_str(buffer, &cursor, tmp, &pc);
+					if (configs.width_malloc)
+						free(tmp);
+				}
 			}
 			break;
 			case 'S':
