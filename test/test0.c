@@ -12,7 +12,8 @@ int main(void)
     printf("%ld + %ld = %ld\n", LONG_MIN, LONG_MAX, (LONG_MIN + LONG_MAX));*/
     /*_printf("%5c\n", 'A');
     printf("%5c", 'A');*/
-    _printf("%#o", UINT_MAX);
+    _printf("%#x", 0);
+    _printf("%#X", 0);
 
     return (0);
 }

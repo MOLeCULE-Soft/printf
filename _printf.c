@@ -131,17 +131,17 @@ int _printf(const char *format, ...)
 			case 'R':
 				if (*format == 'x' || *format == 'X')
 				{
-					if (flags.hash)
-					{
-						buf_add_ch(buffer, &cursor, '0', &pc);
-						buf_add_ch(buffer, &cursor, *format, &pc);
-					}
 					if (lengths._short)
 						params.UInt = (unsigned short)va_arg(var_arg_list, unsigned int);
 					else if (lengths._long)
 						params.UInt = va_arg(var_arg_list, unsigned long);
 					else
 						params.UInt = va_arg(var_arg_list, unsigned int);
+					if (flags.hash && params.UInt != 0)
+					{
+						buf_add_ch(buffer, &cursor, '0', &pc);
+						buf_add_ch(buffer, &cursor, *format, &pc);
+					}
 					tmp = dec2hex(params.UInt, *format, conv_buffer);
 					buf_add_str(buffer, &cursor, tmp, &pc);
 				}
