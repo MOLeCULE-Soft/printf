@@ -228,6 +228,8 @@ int _printf(const char *format, ...)
 				buf_add_str(buffer, &cursor, tmp, &pc);
 				break;
 			default:
+				buf_add_ch(buffer, &cursor, *format, &pc);
+				format--;
 				break;
 			}
 		}
