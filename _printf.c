@@ -34,6 +34,7 @@ int _printf(const char *format, ...)
 	while (*format)
 	{
 		init_options(&options);
+		configs.width_malloc = 0;
 		if (*format == '%')
 		{
 			if (*format == 1)
@@ -243,6 +244,8 @@ int _printf(const char *format, ...)
 					w_buf_add_str(&configs, &flags, &tmp);
 				}
 				buf_add_str(buffer, &cursor, tmp, &pc);
+				if (configs.width_malloc)
+					free(tmp);
 				break;
 			case 'o':
 			case 'u':

@@ -76,6 +76,7 @@ typedef struct config
 	uint64_t precision;
 	char *spec_start;
 	char *width_buffer;
+	short width_malloc;
 } config;
 
 /**
