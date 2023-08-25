@@ -3,6 +3,7 @@
 #include <limits.h>
 int main(void)
 {
+    _printf("%K\n");
     /*_printf("skfn%!\n");*/
     /* printf("% % % %\n"); */
     /*_printf("%ld\n\n", LONG_MIN);
