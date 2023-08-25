@@ -13,12 +13,17 @@ int main(void)
     /*_printf("%5c\n", 'A');
     printf("%5c", 'A');*/
     /*_printf("% ");*/
-    _printf("% \n");    printf("% % % % \n");
-    printf("\n****\n");
-    printf("% \n");    printf("% % % % \n");
-    printf("\n****\n");
-    _printf("%        y\n");    printf("% % % % \n");
-    printf("\n****\n");
-    printf("%         y\n");    printf("% % % % \n");
+    _printf("[%+10d]\n", 1024);
+    _printf("[%+-10d]\n", 1024);
+    _printf("[%+10d]\n", -1024);
+    _printf("[%+-10d]\n", -1024);
+    _printf("[%+2d]\n", -1024);
+    _printf("[%+-2d]\n", -1024);
+    _printf("[%+2d]\n", 1024);
+    _printf("[%+-2d]\n", 1024);
+    _printf("[%d]\n", -1024);
+    _printf("[%d]\n", -1024);
+    _printf("[%d]\n", 1024);
+    _printf("[%d]\n", 1024);
     return (0);
 }

@@ -16,7 +16,7 @@
 #define OPTIONS "FWPL"
 #define SPECIFIERS "dixXsSpoucbrR%"
 #define WRITE_BUFFER_SIZE 1024
-#define CONV_BUFFER_SIZE 33
+#define CONV_BUFFER_SIZE 40
 
 /**
 * struct opt_flag - structure holding flags
@@ -102,5 +102,6 @@ void buf_add_ch(char *buffer, short *cursor, char ch, uint64_t *pc);
 void buf_add_str(char *buffer, short *cursor, char *str, uint64_t *pc);
 void _strrev(char *buffer, short *cursor, char *s, uint64_t *pc);
 void _rot13(char *buffer, short *cursor, char *s, uint64_t *pc);
+void w_buf_add_str(config *cfgs, opt_flag *flgs, char **data);
 
 #endif

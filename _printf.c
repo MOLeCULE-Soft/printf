@@ -70,7 +70,6 @@ int _printf(const char *format, ...)
 					{
 						configs.width = va_arg(var_arg_list, int);
 						options.width = 1;
-						configs.width_buffer = malloc(configs.width);
 						continue;
 					}
 					tmp = (char *)format++;
@@ -80,7 +79,6 @@ int _printf(const char *format, ...)
 					strncpy(conv_buffer, tmp, format - tmp);
 					configs.width = atoll(conv_buffer);
 					options.width = 1;
-					configs.width_buffer = malloc(configs.width);
 					continue;
 				}
 				else if (*format == '.' && !(options.precision + options.length))
@@ -221,13 +219,29 @@ int _printf(const char *format, ...)
 					params.Int = (short)va_arg(var_arg_list, int);
 				else
 					params.Int = va_arg(var_arg_list, int);
-				if (flags.plus && params.Int >= 0)
-					buf_add_ch(buffer, &cursor, '+', &pc);
-				else if (flags.space && params.Int >= 0)
-					buf_add_ch(buffer, &cursor, ' ', &pc);
-				if (params.Int < 0)
-					buf_add_ch(buffer, &cursor, '-', &pc);
 				tmp = base_conv(params.Int, base, conv_buffer);
+				if (flags.plus)
+				{
+					buf_add_ch(buffer, &cursor, '+', &pc);
+					configs.width--;
+				}
+				else if (flags.space)
+				{
+					buf_add_ch(buffer, &cursor, ' ', &pc);
+					configs.width--;
+				}
+				if (params.Int < 0)
+				{
+					if ((flags.plus + flags.space))
+						cursor--;
+					else
+						configs.width--;
+					buf_add_ch(buffer, &cursor, '-', &pc);
+				}
+				if (options.width && strlen(tmp) <= configs.width)
+				{
+					w_buf_add_str(&configs, &flags, &tmp);
+				}
 				buf_add_str(buffer, &cursor, tmp, &pc);
 				break;
 			case 'o':
