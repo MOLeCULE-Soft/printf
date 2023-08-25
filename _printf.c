@@ -234,7 +234,7 @@ int _printf(const char *format, ...)
 					base = 2;
 				else if (*format == 'o')
 					base = 8;
-				if (flags.zero && *format == 'o' && params.UInt)
+				if ((flags.hash || flags.zero) && *format == 'o' && params.UInt)
 					buf_add_ch(buffer, &cursor, '0', &pc);
 
 				tmp = base_conv(params.UInt, base, conv_buffer);
