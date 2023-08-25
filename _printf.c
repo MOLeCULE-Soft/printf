@@ -16,7 +16,8 @@ int _printf(const char *format, ...)
 	va_list var_arg_list;
 	char *tmp;
 	short cursor = 0, base;
-	uint64_t pc, k;
+	uint64_t pc;
+	int64_t k;
 	opt_flag flags = {0};
 	opt_length lengths = {0};
 	option options;
@@ -112,8 +113,16 @@ int _printf(const char *format, ...)
 
 			if (!options.conversion)
 			{
-				format = configs.spec_start;
-				buf_add_ch(buffer, &cursor, *(format++), &pc);
+				if (format != NULL)
+				{
+					k = options.conversion + options.length + options.width;
+					k = (k + options.precision) - options.flag;
+					buf_add_ch(buffer, &cursor, '%', &pc);
+					if (k == -1)
+						format--;
+					else
+						format = configs.spec_start;
+				}
 				continue;
 			}
 			base = 10;

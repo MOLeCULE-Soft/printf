@@ -12,8 +12,13 @@ int main(void)
     printf("%ld + %ld = %ld\n", LONG_MIN, LONG_MAX, (LONG_MIN + LONG_MAX));*/
     /*_printf("%5c\n", 'A');
     printf("%5c", 'A');*/
-    _printf("%#x", 0);
-    _printf("%#X", 0);
-
+    /*_printf("% ");*/
+    _printf("% \n");    printf("% % % % \n");
+    printf("\n****\n");
+    printf("% \n");    printf("% % % % \n");
+    printf("\n****\n");
+    _printf("%        y\n");    printf("% % % % \n");
+    printf("\n****\n");
+    printf("%         y\n");    printf("% % % % \n");
     return (0);
 }
