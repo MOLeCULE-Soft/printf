@@ -4,6 +4,6 @@
 int main(void)
 {
     /*_printf("skfn%!\n");*/
-	printf("%!\n");
+	printf("%K\n");
         return (0);
 }

@@ -110,7 +110,6 @@ int _printf(const char *format, ...)
 			case 's':
 			case 'x':
 			case 'X':
-			case 'S':
 			case 'p':
 			case 'r':
 			case 'R':
@@ -149,45 +148,39 @@ int _printf(const char *format, ...)
 				{
 					params.String = va_arg(var_arg_list, char *);
 					params.String = params.String == NULL ? "(null)" : params.String;
-					if (*format == 'S')
+					if (*format == 'r')
+						_strrev(buffer, &cursor, params.String, &pc);
+					else if (*format == 'R')
+						_rot13(buffer, &cursor, params.String, &pc);
+					else
+						buf_add_str(buffer, &cursor, params.String, &pc);
+				}
+				break;
+			case 'S':
+				params.String = va_arg(var_arg_list, char *);
+				params.String = params.String == NULL ? "(null)" : params.String;
+				k = 0;
+				while (params.String[k] != '\0')
+				{
+					tmp = dec2hex(params.String[k], 'X', conv_buffer);
+					buf_add_ch(buffer, &cursor, '\\', &pc);
+					buf_add_ch(buffer, &cursor, 'x', &pc);
+					if (!isprint(params.String[k]) && params.String[k] < 16)
 					{
-						k = 0;
-						while (params.String[k] != '\0')
-						{
-							if (!isprint(params.String[k]))
-							{
-								tmp = dec2hex(params.String[k], 'X', conv_buffer);
-								buf_add_ch(buffer, &cursor, '\\', &pc);
-								buf_add_ch(buffer, &cursor, 'x', &pc);
-								if (params.String[k] < 16)
-								{
-									buf_add_ch(buffer, &cursor, '0', &pc);
-									buf_add_ch(buffer, &cursor, *tmp, &pc);
-								}
-								else
-								{
-									buf_add_ch(buffer, &cursor, *tmp, &pc);
-									buf_add_ch(buffer, &cursor, *(tmp + 1), &pc);
-								}
-							}
-							else
-							{
-								buf_add_ch(buffer, &cursor, params.String[k], &pc);
-							}
-							k++;
-						}
+						buf_add_ch(buffer, &cursor, '0', &pc);
+						buf_add_ch(buffer, &cursor, *tmp, &pc);
+					}
+					else if (!isprint(params.String[k]))
+					{
+						buf_add_ch(buffer, &cursor, *tmp, &pc);
+						buf_add_ch(buffer, &cursor, *(tmp + 1), &pc);
 					}
 					else
 					{
-						if (*format == 'r')
-							_strrev(buffer, &cursor, params.String, &pc);
-						else if (*format == 'R')
-							_rot13(buffer, &cursor, params.String, &pc);
-						else
-							buf_add_str(buffer, &cursor, params.String, &pc);
+						buf_add_ch(buffer, &cursor, params.String[k], &pc);
 					}
+					k++;
 				}
-				break;
 			case '%':
 				buf_add_ch(buffer, &cursor, *format, &pc);
 				break;
