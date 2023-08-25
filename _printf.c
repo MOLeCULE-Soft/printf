@@ -178,16 +178,19 @@ int _printf(const char *format, ...)
 				k = 0;
 				while (params.String[k] != '\0')
 				{
-					tmp = dec2hex(params.String[k], 'X', conv_buffer);
-					buf_add_ch(buffer, &cursor, '\\', &pc);
-					buf_add_ch(buffer, &cursor, 'x', &pc);
 					if (!isprint(params.String[k]) && params.String[k] < 16)
 					{
+						tmp = dec2hex(params.String[k], 'X', conv_buffer);
+						buf_add_ch(buffer, &cursor, '\\', &pc);
+						buf_add_ch(buffer, &cursor, 'x', &pc);
 						buf_add_ch(buffer, &cursor, '0', &pc);
 						buf_add_ch(buffer, &cursor, *tmp, &pc);
 					}
 					else if (!isprint(params.String[k]))
 					{
+						tmp = dec2hex(params.String[k], 'X', conv_buffer);
+						buf_add_ch(buffer, &cursor, '\\', &pc);
+						buf_add_ch(buffer, &cursor, 'x', &pc);
 						buf_add_ch(buffer, &cursor, *tmp, &pc);
 						buf_add_ch(buffer, &cursor, *(tmp + 1), &pc);
 					}
