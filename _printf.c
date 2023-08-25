@@ -14,7 +14,7 @@ int _printf(const char *format, ...);
 int _printf(const char *format, ...)
 {
 	va_list var_arg_list;
-	char *tmp, *tmp0;
+	char *tmp;
 	short cursor = 0, base;
 	uint64_t pc;
 	int64_t k;
@@ -35,7 +35,6 @@ int _printf(const char *format, ...)
 	{
 		init_options(&options);
 		configs.width_malloc = 0;
-		configs.tmp_malloc = 0;
 		if (*format == '%')
 		{
 			if (*format == 1)
@@ -162,23 +161,14 @@ int _printf(const char *format, ...)
 				tmp = dec2hex(params.UInt, *format, conv_buffer);
 				if (flags.hash && params.UInt != 0)
 				{
-					tmp0 = malloc(strlen(tmp) + 3);
-					if (tmp0)
-					{
-						*(tmp0) = '0';
-						*(tmp0 + 1) = *format;
-						strcpy(tmp0 + 2, tmp);
-						configs.tmp_malloc = 1;
-						tmp = tmp0;
-					}
+					*--tmp = *format;
+					*--tmp = '0';
 				}
 				if (options.width && strlen(tmp) <= configs.width)
 				{
 					w_buf_add_str(&configs, &flags, &tmp);
 				}
 				buf_add_str(buffer, &cursor, tmp, &pc);
-				if (configs.tmp_malloc)
-					free(tmp0);
 				if (configs.width_malloc)
 					free(tmp);
 			}
@@ -192,23 +182,14 @@ int _printf(const char *format, ...)
 				else
 				{
 					tmp = dec2hex(params.UInt, 'x', conv_buffer);
-					tmp0 = malloc(strlen(tmp) + 3);
-					if (tmp0)
-					{
-						*(tmp0) = '0';
-						*(tmp0 + 1) = 'x';
-						strcpy(tmp0 + 2, tmp);
-						configs.tmp_malloc = 1;
-						tmp = tmp0;
-					}
+					*--tmp = 'x';
+					*--tmp = '0';
 				}
 				if (options.width && strlen(tmp) <= configs.width)
 				{
 					w_buf_add_str(&configs, &flags, &tmp);
 				}
 				buf_add_str(buffer, &cursor, tmp, &pc);
-				if (configs.tmp_malloc)
-					free(tmp0);
 				if (configs.width_malloc)
 					free(tmp);
 			}
@@ -319,7 +300,7 @@ int _printf(const char *format, ...)
 					base = 8;
 				tmp = base_conv(params.UInt, base, conv_buffer);
 				if ((flags.hash || flags.zero) && *format == 'o' && params.UInt)
-					*(tmp - 1) = '0';
+					*--tmp = '0';
 				if (options.width && strlen(tmp) <= configs.width && *format != 'b')
 				{
 					w_buf_add_str(&configs, &flags, &tmp);

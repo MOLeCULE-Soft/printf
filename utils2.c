@@ -10,7 +10,7 @@
 */
 void w_buf_add_str(config *cfgs, opt_flag *flgs, char **data)
 {
-	char fill = flgs->zero ? '0' : ' ';
+	char fill = flgs->zero && !flgs->minus ? '0' : ' ';
 	int64_t start;
 
 	cfgs->width_buffer = malloc(cfgs->width + 1);
