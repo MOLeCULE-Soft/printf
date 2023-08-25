@@ -12,6 +12,7 @@
                 "-Wno-format",
                 "-std=gnu89",
                 "*.c",
+                "test/test0.c",
                 "-o",
                 "a.out"
             ],

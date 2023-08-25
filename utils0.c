@@ -12,20 +12,21 @@
 char *base_conv(int64_t n, short base, char *buffer)
 {
 	short tmp_cur = CONV_BUFFER_SIZE - 1;
+	int16_t mod;
 
 	bzero(buffer, CONV_BUFFER_SIZE);
 	buffer[tmp_cur--] = '\0';
-	if (n < 0)
-		n = -n;
-	if (n < base)
+	if (n < base && n > -base)
 	{
-		buffer[tmp_cur--] = n + '0';
+		buffer[tmp_cur--] = (n < 0 ? -n : n) + '0';
 	}
 	else
 	{
 		while (n != 0)
 		{
-			buffer[tmp_cur--] = n % base + '0';
+			mod = n % base;
+			mod = mod < 0 ? -mod : mod;
+			buffer[tmp_cur--] = mod + '0';
 			n /= base;
 		}
 	}

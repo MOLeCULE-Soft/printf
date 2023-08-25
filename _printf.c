@@ -40,7 +40,7 @@ int _printf(const char *format, ...)
 			format++;
 			if (isspace(*format) || *format == '\0')
 				return (-1);
-			configs.spec_start = (char *)format;
+			configs.spec_start = (char *)format - 1;
 			while (*format)
 			{
 				k = options.width + options.precision + options.length;
@@ -56,8 +56,22 @@ int _printf(const char *format, ...)
 					update_flag(&flags, *format);
 					options.flag = 1;
 				}
-				else if (isdigit(*format) && !k)
+				else if ((!k && isdigit(*format)) || (!k && *format == '*'))
 				{
+					/*
+					*	Some of repetion here is so that
+					*	the loop can continue if condition
+					*	is true, eliminating the use of else
+					*	and then putting why withing acceptable
+					*	betty leading tabs.
+					*/
+					if (*format == '*')
+					{
+						configs.width = va_arg(var_arg_list, int);
+						options.width = 1;
+						configs.width_buffer = malloc(configs.width);
+						continue;
+					}
 					tmp = (char *)format++;
 					while (isdigit(*format))
 						format++;
@@ -65,6 +79,7 @@ int _printf(const char *format, ...)
 					strncpy(conv_buffer, tmp, format - tmp);
 					configs.width = atoll(conv_buffer);
 					options.width = 1;
+					configs.width_buffer = malloc(configs.width);
 					continue;
 				}
 				else if (*format == '.' && !(options.precision + options.length))
@@ -98,7 +113,8 @@ int _printf(const char *format, ...)
 			if (!options.conversion)
 			{
 				format = configs.spec_start;
-				break;
+				buf_add_ch(buffer, &cursor, *(format++), &pc);
+				continue;
 			}
 			base = 10;
 			switch (*format)
@@ -181,6 +197,7 @@ int _printf(const char *format, ...)
 					}
 					k++;
 				}
+				break;
 			case '%':
 				buf_add_ch(buffer, &cursor, *format, &pc);
 				break;
@@ -221,8 +238,6 @@ int _printf(const char *format, ...)
 				buf_add_str(buffer, &cursor, tmp, &pc);
 				break;
 			default:
-				buf_add_ch(buffer, &cursor, *format, &pc);
-				format--;
 				break;
 			}
 		}

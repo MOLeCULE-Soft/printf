@@ -68,12 +68,14 @@ typedef struct opt_length
 * @width: value of width
 * @precision: value of precision
 * @spec_start: position after %
+* @width_buffer: buffer if width is set
 */
 typedef struct config
 {
 	uint64_t width;
 	uint64_t precision;
 	char *spec_start;
+	char *width_buffer;
 } config;
 
 /**
