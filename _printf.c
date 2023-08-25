@@ -317,11 +317,16 @@ int _printf(const char *format, ...)
 					base = 2;
 				else if (*format == 'o')
 					base = 8;
-				if ((flags.hash || flags.zero) && *format == 'o' && params.UInt)
-					buf_add_ch(buffer, &cursor, '0', &pc);
-
 				tmp = base_conv(params.UInt, base, conv_buffer);
+				if ((flags.hash || flags.zero) && *format == 'o' && params.UInt)
+					*(tmp - 1) = '0';
+				if (options.width && strlen(tmp) <= configs.width && *format != 'b')
+				{
+					w_buf_add_str(&configs, &flags, &tmp);
+				}
 				buf_add_str(buffer, &cursor, tmp, &pc);
+				if (configs.width_malloc)
+					free(tmp);
 				break;
 			default:
 				break;

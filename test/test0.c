@@ -27,5 +27,17 @@ int main(void)
     printf("[%10s]\n", "Felix");
     _printf("[%-10s]\n", "Felix");
     printf("[%-10s]\n", "Felix");
+    _printf("[%u]\n", UINT_MAX);
+    printf("[%u]\n", UINT_MAX);
+    _printf("[%20u]\n", UINT_MAX);
+    printf("[%20u]\n", UINT_MAX);
+    _printf("[%-20u]\n", UINT_MAX);
+    printf("[%-20u]\n", UINT_MAX);
+    _printf("[%#-20u]\n", UINT_MAX);
+    printf("[%#-20u]\n", UINT_MAX);
+    _printf("[%##-20u]\n", UINT_MAX);
+    printf("[%##-20u]\n", UINT_MAX);
+    _printf("[%##0-20u]\n", UINT_MAX);
+    printf("[%##0-20u]\n", UINT_MAX);
     return (0);
 }
