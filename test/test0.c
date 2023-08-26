@@ -3,7 +3,9 @@
 #include <limits.h>
 int main(void)
 {
-    _printf("[%x]\n", USHRT_MAX);
+    _printf("In the middle %*s of a sentence.\n", 6, "Hey");
+    printf("In the middle %*s of a sentence.\n", 6, "Hey");
+    /*_printf("[%x]\n", USHRT_MAX);
     printf("[%x]\n", USHRT_MAX);
     _printf("[%5x]\n", USHRT_MAX);
     printf("[%5x]\n", USHRT_MAX);
@@ -42,6 +44,6 @@ int main(void)
     _printf("[%##020u]\n", UINT_MAX);
     printf("[%##020u]\n", UINT_MAX);
     _printf("[%##020u]\n", UINT_MAX);
-    printf("[%##020u]\n", UINT_MAX);
+    printf("[%##020u]\n", UINT_MAX);*/
     return (0);
 }
