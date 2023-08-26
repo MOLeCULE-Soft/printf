@@ -67,8 +67,9 @@ int _printf(const char *format, ...)
 					*	and then putting why withing acceptable
 					*	betty leading tabs.
 					*/
-					if (*format++ == '*')
+					if (*format == '*')
 					{
+						format++;
 						configs.width = va_arg(var_arg_list, int);
 						options.width = 1;
 						continue;
