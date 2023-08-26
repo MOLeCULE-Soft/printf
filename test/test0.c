@@ -5,7 +5,11 @@ int main(void)
 {
     _printf("In the middle %*s of a sentence.\n", 6, "Hey");
     printf("In the middle %*s of a sentence.\n", 6, "Hey");
-    _printf("%6d", 102498402);
+    _printf("%6d\n", 102498402);
+    _printf("%06d\n", -1024);
+    printf("%06d\n", -1024);
+    _printf("% 6d\n", -1024);
+    printf("% 6d\n", -1024);
     /*_printf("[%x]\n", USHRT_MAX);
     printf("[%x]\n", USHRT_MAX);
     _printf("[%5x]\n", USHRT_MAX);

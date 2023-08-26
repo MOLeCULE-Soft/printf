@@ -253,39 +253,48 @@ int _printf(const char *format, ...)
 				break;
 			case 'd':
 			case 'i':
-				if (lengths._long)
-					params.Int = va_arg(var_arg_list, long);
-				else if (lengths._short)
-					params.Int = (short)va_arg(var_arg_list, int);
+			if (lengths._long)
+				params.Int = va_arg(var_arg_list, long);
+			else if (lengths._short)
+				params.Int = (short)va_arg(var_arg_list, int);
+			else
+				params.Int = va_arg(var_arg_list, int);
+			tmp = base_conv(params.Int, base, conv_buffer);
+			if (flags.plus)
+			{
+				buf_add_ch(buffer, &cursor, '+', &pc);
+				configs.width--;
+			}
+			else if (flags.space)
+			{
+				buf_add_ch(buffer, &cursor, ' ', &pc);
+				configs.width--;
+			}
+			if (params.Int < 0)
+			{
+				if ((flags.plus + flags.space))
+				{
+					*(buffer + --cursor) = '\0';
+					configs.width++;
+				}
+				if (!flags.zero)
+				{
+					*--tmp = '-';
+				}
 				else
-					params.Int = va_arg(var_arg_list, int);
-				tmp = base_conv(params.Int, base, conv_buffer);
-				if (flags.plus)
 				{
-					buf_add_ch(buffer, &cursor, '+', &pc);
-					configs.width--;
-				}
-				else if (flags.space)
-				{
-					buf_add_ch(buffer, &cursor, ' ', &pc);
-					configs.width--;
-				}
-				if (params.Int < 0)
-				{
-					if ((flags.plus + flags.space))
-						cursor--;
-					else
-						configs.width--;
 					buf_add_ch(buffer, &cursor, '-', &pc);
+					configs.width--;
 				}
-				if (options.width && strlen(tmp) <= configs.width)
-				{
-					w_buf_add_str(&configs, &flags, &tmp);
-				}
-				buf_add_str(buffer, &cursor, tmp, &pc);
-				if (configs.width_malloc)
-					free(tmp);
-				break;
+			}
+			if (options.width && strlen(tmp) <= configs.width)
+			{
+				w_buf_add_str(&configs, &flags, &tmp);
+			}
+			buf_add_str(buffer, &cursor, tmp, &pc);
+			if (configs.width_malloc)
+				free(tmp);
+			break;
 			case 'o':
 			case 'u':
 			case 'b':
