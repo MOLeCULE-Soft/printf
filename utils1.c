@@ -29,7 +29,7 @@ void buf_add_ch(char *buffer, short *cursor, char ch, uint64_t *pc)
 	if (*cursor == WRITE_BUFFER_SIZE)
 	{
 		_write(buffer, WRITE_BUFFER_SIZE);
-		memset(buffer, 0, WRITE_BUFFER_SIZE);
+		bzero(buffer, WRITE_BUFFER_SIZE);
 		*cursor = 0;
 	}
 	buffer[*cursor] = ch;
@@ -59,7 +59,7 @@ void buf_add_str(char *buffer, short *cursor, char *str, uint64_t *pc)
 	if (*cursor == WRITE_BUFFER_SIZE)
 	{
 		_write(buffer, WRITE_BUFFER_SIZE);
-		memset(buffer, 0, WRITE_BUFFER_SIZE);
+		bzero(buffer, WRITE_BUFFER_SIZE);
 		*cursor = 0;
 	}
 	strncpy(buffer + *cursor, str, space_left);

@@ -1,4 +1,4 @@
-#include "main.h"
+#include "../main.h"
 #include <stdio.h>
 #include <limits.h>
 int main(void)
@@ -16,10 +16,10 @@ int main(void)
 		_putchar('\n');
 	}
 
-	/*printf("INT_MAX: %d\tINT_MIN %d!\n", INT_MAX + 1, INT_MIN - 1);
+	printf("INT_MAX: %d\tINT_MIN %d!\n", INT_MAX + 1, INT_MIN - 1);
 	printf("INT_MAX: %i\tINT_MIN %i!\n", INT_MAX + 2, INT_MIN - 2);
 	printf("UINT_MAX: %u\n", UINT_MAX);
 	printf("UINT_MAX: %i\n", UINT_MAX);
 
-        return (0);*/
+    return (0);
 }

@@ -1,7 +1,6 @@
 #ifndef GroupPrintf
 #define GroupPrintf
 
-#include <stdarg.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
@@ -17,6 +16,9 @@
 #define SPECIFIERS "dixXsSpoucbrR%"
 #define WRITE_BUFFER_SIZE 1024
 #define CONV_BUFFER_SIZE 40
+#define BASE_10 10
+#define BASE_2 2
+#define BASE_8 8
 
 /**
 * struct opt_flag - structure holding flags
@@ -94,6 +96,37 @@ typedef struct param
 	uint64_t UInt;
 	char *String;
 } param;
+
+/**
+ * struct bundle - structure hundler bundle of data objects
+ * @list: variable list
+ * @flags: flags
+ * @lengths: lengths
+ * @cfgs: configs
+ * @opts: options
+ * @params: paramters
+ * @cursor: buffer cursor
+ * @print_counter: for characters printed
+ * @buffer: for writing
+ * @conv_buffer: for conversions
+ * @tmp: temporal helper
+ * @cur_conv: current format character
+*/
+typedef struct bundle
+{
+	va_list list;
+	opt_flag flags;
+	opt_length lengths;
+	config cfgs;
+	option opts;
+	param params;
+	short cursor;
+	uint64_t print_counter;
+	char buffer[WRITE_BUFFER_SIZE];
+	char conv_buffer[CONV_BUFFER_SIZE];
+	char *tmp;
+	char cur_conv;
+} bundle;
 
 int _write(char *buffer, int bytes);
 int _printf(const char *format, ...);

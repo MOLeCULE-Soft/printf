@@ -1,4 +1,5 @@
 #include "main.h"
+#include "handlers.h"
 
 int _printf(const char *format, ...);
 /**
@@ -9,100 +10,84 @@ int _printf(const char *format, ...);
 *
 * Return: count of characters printed
 * Example:
-*    _printf("%c grade (100%%) in %s", 'A', "0x11"); --> A grade (100%) in 0x11
+*    _printf("%c grade (100%%) in %s", 'A', "0x11");
+*    --> A grade (100%) in 0x11
 */
 int _printf(const char *format, ...)
 {
-	va_list var_arg_list;
-	char *tmp;
-	short cursor = 0, base;
-	uint64_t pc;
-	int64_t k;
-	opt_flag flags = {0};
-	opt_length lengths = {0};
-	option options;
-	config configs = {0};
-	param params;
-	char buffer[WRITE_BUFFER_SIZE];
-	char conv_buffer[CONV_BUFFER_SIZE];
+	short k;
+	bundle b = {{{0}}, {0}, {0}, {0}, {0}, {0}, 0, 0, "", "", NULL, '\0'};
 
-	bzero(buffer, WRITE_BUFFER_SIZE);
-	va_start(var_arg_list, format);
-	pc = 0;
+	void (*handlers[])(bundle *) = {handle_character, handle_integer,
+									handle_natural, handle_string};
+	bzero(b.buffer, WRITE_BUFFER_SIZE);
+	va_start(b.list, format);
 	if (format == NULL)
 		return (-1);
 	while (*format)
 	{
-		init_options(&options);
-		configs.width_malloc = 0;
+		init_options(&b.opts);
+		b.cfgs.width_malloc = 0;
 		if (*format == '%')
 		{
 			if (*format == 1)
 				return (-1);
 			format++;
-			if (*format == '\0')
+			if (!*format)
 				return (-1);
-			configs.spec_start = (char *)format;
+			b.cfgs.spec_start = (char *)format;
 			while (*format)
 			{
-				k = options.width + options.precision + options.length;
+				k = b.opts.width + b.opts.precision + b.opts.length;
 				if (strchr(SPECIFIERS, *format) != NULL)
 				{
-					options.conversion = 1;
+					b.opts.conversion = 1;
 					break;
 				}
 				else if (strchr(FLAGS, *format) != NULL)
 				{
-					if (options.width + options.precision + options.length)
+					if (k)
 						break;
-					update_flag(&flags, *format);
-					options.flag = 1;
+					update_flag(&b.flags, *format);
+					b.opts.flag = 1;
 				}
 				else if ((!k && isdigit(*format)) || (!k && *format == '*'))
 				{
-					/*
-					*	Some of repetion here is so that
-					*	the loop can continue if condition
-					*	is true, eliminating the use of else
-					*	and then putting why withing acceptable
-					*	betty leading tabs.
-					*/
 					if (*format == '*')
 					{
 						format++;
-						configs.width = va_arg(var_arg_list, int);
-						options.width = 1;
+						b.cfgs.width = va_arg(b.list, int);
+						b.opts.width = 1;
 						continue;
 					}
-					tmp = (char *)format++;
+					b.tmp = (char *)format++;
 					while (isdigit(*format))
 						format++;
-					bzero(conv_buffer, CONV_BUFFER_SIZE);
-					strncpy(conv_buffer, tmp, format - tmp);
-					configs.width = atoll(conv_buffer);
-					options.width = 1;
+					bzero(b.conv_buffer, CONV_BUFFER_SIZE);
+					strncpy(b.conv_buffer, b.tmp, format - b.tmp);
+					b.cfgs.width = atoll(b.conv_buffer);
+					b.opts.width = 1;
 					continue;
 				}
-				else if (*format == '.' && !(options.precision + options.length))
+				else if (*format == '.' && !(b.opts.precision + b.opts.length))
 				{
-					tmp = (char *) ++format;
+					b.tmp = (char *) ++format;
 					while (isdigit(*format))
 						format++;
-					if (format - tmp > 0)
+					if (format - b.tmp > 0)
 					{
-						bzero(conv_buffer, CONV_BUFFER_SIZE);
-						strncpy(conv_buffer, tmp, format - tmp);
-						configs.precision = atoll(conv_buffer);
-						options.precision = 1;
+						bzero(b.conv_buffer, CONV_BUFFER_SIZE);
+						strncpy(b.conv_buffer, b.tmp, format - b.tmp);
+						b.cfgs.precision = atoll(b.conv_buffer);
+						b.opts.precision = 1;
 						continue;
 					}
 					break;
-
 				}
-				else if (strchr(LENGTHS, *format) != NULL && !options.length)
+				else if (strchr(LENGTHS, *format) != NULL && !b.opts.length)
 				{
-					update_length(&lengths, *format);
-					options.length = 1;
+					update_length(&b.lengths, *format);
+					b.opts.length = 1;
 				}
 				else
 				{
@@ -111,39 +96,25 @@ int _printf(const char *format, ...)
 				format++;
 			}
 
-			if (!options.conversion)
+			if (!b.opts.conversion)
 			{
 				if (format != NULL)
 				{
-					k = options.conversion + options.length + options.width;
-					k = (k + options.precision) - options.flag;
-					buf_add_ch(buffer, &cursor, '%', &pc);
+					k = b.opts.conversion + b.opts.length + b.opts.width;
+					k = (k + b.opts.precision) - b.opts.flag;
+					buf_add_ch(b.buffer, &b.cursor, '%', &b.print_counter);
 					if (k == -1)
 						format--;
 					else
-						format = configs.spec_start;
+						format = b.cfgs.spec_start;
 				}
 				continue;
 			}
-			base = 10;
-			switch (*format)
+			b.cur_conv = *format;
+			switch (b.cur_conv)
 			{
 			case 'c':
-				params.Int = (char)va_arg(var_arg_list, int);
-				if (options.width && 1 <= configs.width)
-				{
-					bzero(conv_buffer, CONV_BUFFER_SIZE);
-					*conv_buffer = params.Int;
-					tmp = (char *)conv_buffer;
-					w_buf_add_str(&configs, &flags, &tmp);
-					buf_add_str(buffer, &cursor, tmp, &pc);
-					if (configs.width_malloc)
-						free(tmp);
-				}
-				else
-				{
-					buf_add_ch(buffer, &cursor, params.Int, &pc);
-				}
+				handlers[_character](&b);
 				break;
 			case 's':
 			case 'x':
@@ -151,173 +122,20 @@ int _printf(const char *format, ...)
 			case 'p':
 			case 'r':
 			case 'R':
-			if (*format == 'x' || *format == 'X')
-			{
-				if (lengths._short)
-					params.UInt = (unsigned short)va_arg(var_arg_list, unsigned int);
-				else if (lengths._long)
-					params.UInt = va_arg(var_arg_list, unsigned long);
-				else
-					params.UInt = va_arg(var_arg_list, unsigned int);
-				tmp = dec2hex(params.UInt, *format, conv_buffer);
-				if (flags.hash && params.UInt != 0)
-				{
-					*--tmp = *format;
-					*--tmp = '0';
-				}
-				if (options.width && strlen(tmp) <= configs.width)
-				{
-					w_buf_add_str(&configs, &flags, &tmp);
-				}
-				buf_add_str(buffer, &cursor, tmp, &pc);
-				if (configs.width_malloc)
-					free(tmp);
-			}
-			else if (*format == 'p')
-			{
-				params.UInt = va_arg(var_arg_list, uint64_t);
-				if (params.UInt == 0)
-				{
-					tmp = "(nil)";
-				}
-				else
-				{
-					tmp = dec2hex(params.UInt, 'x', conv_buffer);
-					*--tmp = 'x';
-					*--tmp = '0';
-				}
-				if (options.width && strlen(tmp) <= configs.width)
-				{
-					w_buf_add_str(&configs, &flags, &tmp);
-				}
-				buf_add_str(buffer, &cursor, tmp, &pc);
-				if (configs.width_malloc)
-					free(tmp);
-			}
-			else
-			{
-				params.String = va_arg(var_arg_list, char *);
-				params.String = params.String == NULL ? "(null)" : params.String;
-				if (*format == 'r')
-				{
-					_strrev(buffer, &cursor, params.String, &pc);
-				}
-				else if (*format == 'R')
-				{
-					_rot13(buffer, &cursor, params.String, &pc);
-				}
-				else
-				{
-					tmp = params.String;
-					if (options.width && strlen(tmp) <= configs.width)
-					{
-						w_buf_add_str(&configs, &flags, &tmp);
-					}
-					buf_add_str(buffer, &cursor, tmp, &pc);
-					if (configs.width_malloc)
-						free(tmp);
-				}
-			}
-			break;
 			case 'S':
-				params.String = va_arg(var_arg_list, char *);
-				params.String = params.String == NULL ? "(null)" : params.String;
-				k = 0;
-				while (params.String[k] != '\0')
-				{
-					if (!isprint(params.String[k]) && params.String[k] < 16)
-					{
-						tmp = dec2hex(params.String[k], 'X', conv_buffer);
-						buf_add_ch(buffer, &cursor, '\\', &pc);
-						buf_add_ch(buffer, &cursor, 'x', &pc);
-						buf_add_ch(buffer, &cursor, '0', &pc);
-						buf_add_ch(buffer, &cursor, *tmp, &pc);
-					}
-					else if (!isprint(params.String[k]))
-					{
-						tmp = dec2hex(params.String[k], 'X', conv_buffer);
-						buf_add_ch(buffer, &cursor, '\\', &pc);
-						buf_add_ch(buffer, &cursor, 'x', &pc);
-						buf_add_ch(buffer, &cursor, *tmp, &pc);
-						buf_add_ch(buffer, &cursor, *(tmp + 1), &pc);
-					}
-					else
-					{
-						buf_add_ch(buffer, &cursor, params.String[k], &pc);
-					}
-					k++;
-				}
+				handlers[_string](&b);
 				break;
 			case '%':
-				buf_add_ch(buffer, &cursor, *format, &pc);
+				buf_add_ch(b.buffer, &b.cursor, b.cur_conv, &b.print_counter);
 				break;
 			case 'd':
 			case 'i':
-			if (lengths._long)
-				params.Int = va_arg(var_arg_list, long);
-			else if (lengths._short)
-				params.Int = (short)va_arg(var_arg_list, int);
-			else
-				params.Int = va_arg(var_arg_list, int);
-			tmp = base_conv(params.Int, base, conv_buffer);
-			if (flags.plus)
-			{
-				buf_add_ch(buffer, &cursor, '+', &pc);
-				configs.width--;
-			}
-			else if (flags.space)
-			{
-				buf_add_ch(buffer, &cursor, ' ', &pc);
-				configs.width--;
-			}
-			if (params.Int < 0)
-			{
-				if ((flags.plus + flags.space))
-				{
-					*(buffer + --cursor) = '\0';
-					configs.width++;
-				}
-				if (!flags.zero)
-				{
-					*--tmp = '-';
-				}
-				else
-				{
-					buf_add_ch(buffer, &cursor, '-', &pc);
-					configs.width--;
-				}
-			}
-			if (options.width && strlen(tmp) <= configs.width)
-			{
-				w_buf_add_str(&configs, &flags, &tmp);
-			}
-			buf_add_str(buffer, &cursor, tmp, &pc);
-			if (configs.width_malloc)
-				free(tmp);
+				handlers[_integer](&b);
 			break;
 			case 'o':
 			case 'u':
 			case 'b':
-				if (lengths._long && *format != 'b')
-					params.UInt = va_arg(var_arg_list, unsigned long);
-				else if (lengths._short && *format != 'b')
-					params.UInt = va_arg(var_arg_list, unsigned int) % (USHRT_MAX + 1);
-				else
-					params.UInt = va_arg(var_arg_list, unsigned int);
-				if (*format == 'b')
-					base = 2;
-				else if (*format == 'o')
-					base = 8;
-				tmp = base_conv(params.UInt, base, conv_buffer);
-				if ((flags.hash || flags.zero) && *format == 'o' && params.UInt)
-					*--tmp = '0';
-				if (options.width && strlen(tmp) <= configs.width && *format != 'b')
-				{
-					w_buf_add_str(&configs, &flags, &tmp);
-				}
-				buf_add_str(buffer, &cursor, tmp, &pc);
-				if (configs.width_malloc)
-					free(tmp);
+				handlers[_natural](&b);
 				break;
 			default:
 				break;
@@ -325,14 +143,14 @@ int _printf(const char *format, ...)
 		}
 		else
 		{
-			buf_add_ch(buffer, &cursor, *format, &pc);
+			buf_add_ch(b.buffer, &b.cursor, *format, &b.print_counter);
 		}
 		format++;
 	}
-	if (cursor > 0)
+	if (b.cursor > 0)
 	{
-		_write(buffer, cursor);
+		_write(b.buffer, b.cursor);
 	}
-	va_end(var_arg_list);
-	return (pc);
+	va_end(b.list);
+	return (b.print_counter);
 }
