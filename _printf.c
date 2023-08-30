@@ -98,7 +98,7 @@ int _printf(const char *format, ...)
 
 			if (!b.opts.conversion)
 			{
-				if (format != NULL)
+				if (*format)
 				{
 					k = b.opts.conversion + b.opts.length + b.opts.width;
 					k = (k + b.opts.precision) - b.opts.flag;

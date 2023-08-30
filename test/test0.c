@@ -3,7 +3,6 @@
 #include <limits.h>
 int main(void)
 {
-    _printf("_Len: %d\n", _printf("%+d", -1024));
-    printf("=Len: %d\n", printf("%+d", -1024));
+    _printf("% "); _printf("% % % % ");
     return (0);
 }
