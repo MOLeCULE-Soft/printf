@@ -3,7 +3,16 @@
 #include <limits.h>
 int main(void)
 {
-    _printf("[%*c]sk\n", 6, 'A');
-    printf("[%*c]sk\n", 6, 'A');
-    return (0);
+	int len, len2;
+
+	len = _printf("%*c", 6, 0);
+	len2 = printf("%*c", 6, 0);
+	fflush(stdout);
+	if (len != len2)
+	{
+		printf("Lengths differ.\n");
+		fflush(stdout);
+		return (1);
+	}
+	return (0);
 }

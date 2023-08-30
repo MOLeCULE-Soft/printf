@@ -13,9 +13,14 @@ void handle_character(bundle *b)
 	{
 		bzero(b->conv_buffer, CONV_BUFFER_SIZE);
 		if (b->params.Int)
+		{
 			*b->conv_buffer = b->params.Int;
+		}
 		else
+		{
 			b->cfgs.width--;
+			b->print_counter++;
+		}
 		b->tmp = (char *)b->conv_buffer;
 		w_buf_add_str(&b->cfgs, &b->flags, &b->tmp);
 		buf_add_str(b->buffer, &b->cursor, b->tmp, &b->print_counter);
