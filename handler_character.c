@@ -12,14 +12,17 @@ void handle_character(bundle *b)
 	if (b->opts.width && b->cfgs.width > 1)
 	{
 		bzero(b->conv_buffer, CONV_BUFFER_SIZE);
-		*b->conv_buffer = b->params.Int;
+		if (b->params.Int)
+			*b->conv_buffer = b->params.Int;
+		else
+			b->cfgs.width--;
 		b->tmp = (char *)b->conv_buffer;
 		w_buf_add_str(&b->cfgs, &b->flags, &b->tmp);
 		buf_add_str(b->buffer, &b->cursor, b->tmp, &b->print_counter);
 		if (b->cfgs.width_malloc)
 			free(b->tmp);
 	}
-	else
+	else if (b->params.Int)
 	{
 		buf_add_ch(b->buffer, &b->cursor, b->params.Int, &b->print_counter);
 	}
