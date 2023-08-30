@@ -1,12 +1,18 @@
-#include "../main.h"
 #include <stdio.h>
-#include <limits.h>
+#include <stdlib.h>
+#include "../main.h"
+
+/**
+ * main - Entry point
+ *
+ * Return: 0 on success, error code otherwise
+ */
 int main(void)
 {
 	int len, len2;
 
-	len = _printf("%*c", 6, 0);
-	len2 = printf("%*c", 6, 0);
+	len = _printf("%06o", 102498402);
+	len2 = printf("%06o", 102498402);
 	fflush(stdout);
 	if (len != len2)
 	{

@@ -22,7 +22,7 @@ void handle_natural(bundle *b)
 	else
 		b->tmp = base_conv(b->params.UInt, BASE_10, b->conv_buffer);
 
-	if ((b->flags.hash || b->flags.zero) && b->cur_conv == 'o' && b->params.UInt)
+	if (b->flags.hash && b->cur_conv == 'o' && b->params.UInt)
 		*--b->tmp = '0';
 	if (b->opts.width && strlen(b->tmp) <= b->cfgs.width && b->cur_conv != 'b')
 	{
