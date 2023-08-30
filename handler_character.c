@@ -8,26 +8,30 @@
 */
 void handle_character(bundle *b)
 {
+	char fill = b->flags.zero && !b->flags.minus ? '0' : ' ';
+	short start;
+
 	b->params.Int = (char)va_arg(b->list, int);
 	if (b->opts.width && b->cfgs.width > 1)
 	{
-		bzero(b->conv_buffer, CONV_BUFFER_SIZE);
-		if (b->params.Int)
+		b->cfgs.width_buffer = malloc(b->cfgs.width);
+		if (b->cfgs.width_buffer)
 		{
-			*b->conv_buffer = b->params.Int;
+			memset(b->cfgs.width_buffer, fill, b->cfgs.width);
+			if (b->flags.minus)
+				start =  0;
+			else
+				start = b->cfgs.width - 1;
+			*(b->cfgs.width_buffer + start) = b->params.Int;
+			_write(b->buffer, b->cursor);
+			bzero(b->buffer, WRITE_BUFFER_SIZE);
+			b->cursor = 0;
+			_write(b->cfgs.width_buffer, b->cfgs.width);
+			b->print_counter += b->cfgs.width;
+			free(b->cfgs.width_buffer);
 		}
-		else
-		{
-			b->cfgs.width--;
-			b->print_counter++;
-		}
-		b->tmp = (char *)b->conv_buffer;
-		w_buf_add_str(&b->cfgs, &b->flags, &b->tmp);
-		buf_add_str(b->buffer, &b->cursor, b->tmp, &b->print_counter);
-		if (b->cfgs.width_malloc)
-			free(b->tmp);
 	}
-	else if (b->params.Int)
+	else
 	{
 		buf_add_ch(b->buffer, &b->cursor, b->params.Int, &b->print_counter);
 	}
