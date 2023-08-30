@@ -33,6 +33,7 @@ void handle_integer(bundle *b)
 		{
 			*(b->buffer + --(b->cursor)) = '\0';
 			b->cfgs.width++;
+			b->print_counter--;
 		}
 		if (!b->flags.zero)
 		{

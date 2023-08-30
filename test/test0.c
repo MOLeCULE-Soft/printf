@@ -3,7 +3,7 @@
 #include <limits.h>
 int main(void)
 {
-    _printf("%.-8d\n", 1024);
-    printf("%.-8d", 1024);
+    _printf("_Len: %d\n", _printf("%+d", -1024));
+    printf("=Len: %d\n", printf("%+d", -1024));
     return (0);
 }
