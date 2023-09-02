@@ -3,6 +3,11 @@
 Welcome to our Printf Project on ALX 2023! This is a simple implementation of the printf function in the C programming language.
 ## Introduction
 The `printf` function in C is a widely used function for formatting and printing text. This project aims to provide a basic implementation of the `printf` function to demonstrate how it works internally.
+## ## Features
+
+- Lightweight `printf` implementation.
+- Supports a variety of format specifiers.
+- Easy to integrate into C projects.
 ## Supported Conversion Specifiers
 This printf implementation supports the following specifiers:
 
@@ -13,3 +18,4 @@ This printf implementation supports the following specifiers:
 - %x and %X: Integer (hexadecimal)
 - %o: Integer (octal)
 - %b: Binary
+- %p: address of a pointer in hexadecimal format
