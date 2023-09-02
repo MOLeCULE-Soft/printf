@@ -6,8 +6,8 @@ The `printf` function in C is a widely used function for formatting and printing
 ## Supported Conversion Specifiers
 This printf implementation supports the following specifiers:
 
-%c: Character
-%s: String
+-%c: Character
+-%s: String
 %d and %i: Integer (decimal)
 %u: Unsigned integer (decimal)
 %x and %X: Integer (hexadecimal)
