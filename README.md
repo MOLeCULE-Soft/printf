@@ -19,3 +19,6 @@ This printf implementation supports the following specifiers:
 - %o: Integer (octal)
 - %b: Binary
 - %p: Address of a pointer in hexadecimal format
+## Contributors
+* Felix Kimbu (@MOLeCULE-Soft)
+* Husna Hussein (@HusnaHussein)
